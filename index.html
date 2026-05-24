@@ -106,7 +106,8 @@ canvas.chart{width:100%!important;display:block}
   <div class="logo">V3</div>
   <h1>GENERADOR CONCÉNTRICO</h1>
   <span class="tag">REV.15 · T LATERAL</span>
-  <span class="pat">PATENTE CONCEDIDA</span>
+  <span class="pat" id="pat_badge">PATENTE CONCEDIDA</span>
+  <button id="lang_btn_es" onclick="setLang('es')" style="margin-left:12px;padding:4px 12px;border-radius:4px 0 0 4px;border:1px solid var(--teal);border-right:none;background:rgba(0,200,240,.35);color:var(--teal);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .2s;" title="Español">ES</button><button id="lang_btn_en" onclick="setLang('en')" style="padding:4px 12px;border-radius:0 4px 4px 0;border:1px solid var(--teal);background:rgba(0,200,240,.12);color:var(--teal);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .2s;" title="English">EN</button>
 </header>
 
 <div class="main">
@@ -187,7 +188,7 @@ canvas.chart{width:100%!important;display:block}
     <div class="hb g"><div><div class="hv" id="hP2">—</div><div class="hl">Potencia media continua</div></div></div>
     <div class="hb a"><div><div class="hv" id="hHog">—</div><div class="hl">Hogares (3500 kWh/año IDAE)</div></div></div>
     <div class="rs">
-      <div class="rt">Producción anual</div>
+      <div class="rt" data-i18n="rt_prod">Producción anual</div>
       <div class="rr"><span class="rk">kWh/hora</span><span class="rv t" id="rkwh">—</span></div>
       <div class="rr"><span class="rk">kWh/día</span><span class="rv" id="rkwhd">—</span></div>
       <div class="rr"><span class="rk">kWh/año</span><span class="rv g" id="rkwha">—</span></div>
@@ -195,7 +196,7 @@ canvas.chart{width:100%!important;display:block}
       <div class="rr"><span class="rk">vs panel solar 400W</span><span class="rv a" id="rsol">—</span></div>
     </div>
     <div class="rs">
-      <div class="rt">Ciclo (30 s)</div>
+      <div class="rt" data-i18n="rt_ciclo">Ciclo (30 s)</div>
       <div class="rr"><span class="rk">E C1 neta (gravedad)</span><span class="rv a" id="rEC1">—</span></div>
       <div class="rr"><span class="rk">E C2 neta (Arquímedes)</span><span class="rv g" id="rEC2">—</span></div>
       <div class="rr"><span class="rk">E sistema T (evacuación)</span><span class="rv t">0 J — estanque paga</span></div>
@@ -203,7 +204,7 @@ canvas.chart{width:100%!important;display:block}
       <div class="rr"><span class="rk">Factor H_rec / h_cil</span><span class="rv a" id="rfT">—</span></div>
     </div>
     <div class="rs">
-      <div class="rt">Geometría y masas</div>
+      <div class="rt" data-i18n="rt_geo">Geometría y masas</div>
       <div class="rr"><span class="rk">Diámetro cilindro</span><span class="rv" id="rdc">—</span></div>
       <div class="rr"><span class="rk">Altura cilindro</span><span class="rv" id="rhc">—</span></div>
       <div class="rr"><span class="rk">Volumen cilindro</span><span class="rv" id="rVc">—</span></div>
@@ -218,7 +219,7 @@ canvas.chart{width:100%!important;display:block}
   <div class="tc" id="tc_sistat">
     <div class="hb t"><div><div class="hv" style="font-size:16px">T LATERAL</div><div class="hl">Dispuesta al lado de la columna · Recorrido completo</div></div></div>
     <div class="rs">
-      <div class="rt">Dimensiones de la T</div>
+      <div class="rt" data-i18n="rt_tdim">Dimensiones de la T</div>
       <div class="rr"><span class="rk">Volumen a almacenar</span><span class="rv t" id="tVol">—</span></div>
       <div class="rr"><span class="rk">Diámetro interior brazos</span><span class="rv a" id="tdT">—</span></div>
       <div class="rr"><span class="rk">Longitud de los brazos</span><span class="rv" id="thT">—</span></div>
@@ -226,21 +227,21 @@ canvas.chart{width:100%!important;display:block}
       <div class="rr"><span class="rk">Material recomendado</span><span class="rv a">AISI 316L soldado</span></div>
     </div>
     <div class="rs">
-      <div class="rt">Conducto desagüe (T → superficie)</div>
+      <div class="rt" data-i18n="rt_tcond">Conducto desagüe (T → superficie)</div>
       <div class="rr"><span class="rk">Caudal evacuación</span><span class="rv" id="tQ">—</span></div>
       <div class="rr"><span class="rk">DN conducto calculado</span><span class="rv t" id="tDc">—</span></div>
       <div class="rr"><span class="rk">Longitud conducto</span><span class="rv" id="tLc">—</span></div>
       <div class="rr"><span class="rk">Velocidad flujo diseño</span><span class="rv">1.5 m/s</span></div>
     </div>
     <div class="rs">
-      <div class="rt">Presión y válvulas</div>
+      <div class="rt" data-i18n="rt_tpres">Presión y válvulas</div>
       <div class="rr"><span class="rk">Presión fondo estanque</span><span class="rv" id="tPf">—</span></div>
       <div class="rr"><span class="rk">Clase válvulas</span><span class="rv a" id="tPN">—</span></div>
       <div class="rr"><span class="rk">Émbolo</span><span class="rv">HDPE + O-ring PTFE</span></div>
       <div class="rr"><span class="rk">OPEX evacuación</span><span class="rv g">0 € — estanque paga</span></div>
     </div>
     <div class="rs">
-      <div class="rt">Estanque (1 módulo)</div>
+      <div class="rt" data-i18n="rt_test">Estanque (1 módulo)</div>
       <div class="rr"><span class="rk">Separación módulos</span><span class="rv" id="tSep">—</span></div>
       <div class="rr"><span class="rk">Dimensiones planta</span><span class="rv a" id="tEst">—</span></div>
       <div class="rr"><span class="rk">Volumen estanque</span><span class="rv" id="tVest">—</span></div>
@@ -251,7 +252,7 @@ canvas.chart{width:100%!important;display:block}
   <div class="tc" id="tc_gen">
     <div class="hb t"><div><div class="hv" style="font-size:15px">TFPM Linear</div><div class="hl">Transverse Flux Permanent Magnet Generator</div></div></div>
     <div class="rs">
-      <div class="rt">Especificación eléctrica</div>
+      <div class="rt" data-i18n="rt_gelec">Especificación eléctrica</div>
       <div class="rr"><span class="rk">Potencia nominal</span><span class="rv g" id="gPn">—</span></div>
       <div class="rr"><span class="rk">Tensión de salida</span><span class="rv" id="gV">—</span></div>
       <div class="rr"><span class="rk">Corriente nominal</span><span class="rv" id="gI">—</span></div>
@@ -259,7 +260,7 @@ canvas.chart{width:100%!important;display:block}
       <div class="rr"><span class="rk">Norma aplicable</span><span class="rv">IEC 60034-1 + 60529</span></div>
     </div>
     <div class="rs">
-      <div class="rt">Parámetros mecánicos</div>
+      <div class="rt" data-i18n="rt_gmec">Parámetros mecánicos</div>
       <div class="rr"><span class="rk">Velocidad lineal media</span><span class="rv t" id="gv">—</span></div>
       <div class="rr"><span class="rk">Velocidad lineal pico</span><span class="rv" id="gvp">—</span></div>
       <div class="rr"><span class="rk">Fuerza máxima diseño</span><span class="rv a" id="gF">—</span></div>
@@ -267,14 +268,14 @@ canvas.chart{width:100%!important;display:block}
       <div class="rr"><span class="rk">Paso polar</span><span class="rv">100 mm</span></div>
     </div>
     <div class="rs">
-      <div class="rt">Materiales</div>
+      <div class="rt" data-i18n="rt_gmat">Materiales</div>
       <div class="rr"><span class="rk">Magnetos (cilindro/rotor)</span><span class="rv a">NdFeB N52</span></div>
       <div class="rr"><span class="rk">Laminaciones (columna)</span><span class="rv">FeSi 3% M270-50A</span></div>
       <div class="rr"><span class="rk">Bobinado</span><span class="rv">Cu esmaltado clase H</span></div>
       <div class="rr"><span class="rk">Encapsulado magnetos</span><span class="rv">Epoxy marino IP68</span></div>
     </div>
     <div class="rs">
-      <div class="rt">Electrónica de potencia</div>
+      <div class="rt" data-i18n="rt_gpow">Electrónica de potencia</div>
       <div class="rr"><span class="rk">Rectificador</span><span class="rv">Puente IGBT 6 pulsos</span></div>
       <div class="rr"><span class="rk">Regulador</span><span class="rv">MPPT activo</span></div>
       <div class="rr"><span class="rk">Inversor</span><span class="rv" id="gInv">—</span></div>
@@ -284,18 +285,18 @@ canvas.chart{width:100%!important;display:block}
 
   <!-- TAB GRÁFICA -->
   <div class="tc" id="tc_grafica">
-    <div class="rt" style="margin-bottom:8px">Potencia instantánea por fase (ciclo 30s)</div>
+    <div class="rt" data-i18n="rt_ch1" style="margin-bottom:8px">Potencia instantánea por fase (ciclo 30s)</div>
     <canvas class="chart" id="ch1" height="170"></canvas>
-    <div class="rt" style="margin:12px 0 8px">Potencia vs H_rec — efecto Sistema T</div>
+    <div class="rt" data-i18n="rt_ch2" style="margin:12px 0 8px">Potencia vs H_rec — efecto Sistema T</div>
     <canvas class="chart" id="ch2" height="150"></canvas>
-    <div class="rt" style="margin:12px 0 8px">Comparativa configuraciones</div>
+    <div class="rt" data-i18n="rt_ch3" style="margin:12px 0 8px">Comparativa configuraciones</div>
     <canvas class="chart" id="ch3" height="130"></canvas>
   </div>
 
   <!-- TAB ELECTROD. -->
   <div class="tc" id="tc_elec">
     <div class="rs">
-      <div class="rt">Energía producida</div>
+      <div class="rt" data-i18n="rt_eprod">Energía producida</div>
       <div class="rr"><span class="rk">Por hora</span><span class="rv t" id="ewh">—</span></div>
       <div class="rr"><span class="rk">Por día</span><span class="rv" id="ewhd">—</span></div>
       <div class="rr"><span class="rk">Por año</span><span class="rv g" id="ekwha">—</span></div>
@@ -367,33 +368,33 @@ function calc(r,h,H,hol,eta){
 // ELECTRODOMÉSTICOS
 // ════════════════════════════════════════════════════════════════
 const EL=[
-  {n:"Sensor IoT/Arduino",     p:.5,  ic:"[IoT]"},
-  {n:"Reloj digital",          p:.5,  ic:"[reloj]"},
-  {n:"LED 1W",                 p:1,   ic:"[LED1]"},
-  {n:"Alarma/detector",        p:2,   ic:"[alarm]"},
-  {n:"Radio FM portátil",      p:3,   ic:"[radio]"},
-  {n:"Cargador USB 5W",        p:5,   ic:"[USB]"},
-  {n:"Cámara IP",              p:5,   ic:"[cam]"},
-  {n:"Raspberry Pi 4",         p:6,   ic:"[RPi]"},
-  {n:"Tira LED 1m",            p:7.2, ic:"[LEDs]"},
-  {n:"Router WiFi",            p:8,   ic:"[WiFi]"},
-  {n:"Bombilla LED 10W",       p:10,  ic:"[L10]"},
-  {n:"Ventilador mesa",        p:10,  ic:"[vent]"},
-  {n:"Bombilla LED 20W",       p:20,  ic:"[L20]"},
-  {n:"Frigorífico A+++",       p:25,  ic:"[frig]"},
-  {n:'TV LED 32"',             p:30,  ic:"[TV]"},
-  {n:"Portátil AMD Ryzen 5",   p:35,  ic:"[PC-e]"},
-  {n:"Portátil Intel i5",      p:45,  ic:"[PC-s]"},
-  {n:"Portátil gaming 65W",    p:65,  ic:"[PC-g]"},
-  {n:"Microondas (mín.)",      p:700, ic:"[mic]"},
+  {n:"Sensor IoT/Arduino",     en:"IoT/Arduino sensor",      p:.5,  ic:"[IoT]"},
+  {n:"Reloj digital",          en:"Digital clock",           p:.5,  ic:"[reloj]"},
+  {n:"LED 1W",                 en:"LED 1W",                  p:1,   ic:"[LED1]"},
+  {n:"Alarma/detector",        en:"Alarm/detector",          p:2,   ic:"[alarm]"},
+  {n:"Radio FM portátil",      en:"Portable FM radio",       p:3,   ic:"[radio]"},
+  {n:"Cargador USB 5W",        en:"USB 5W charger",          p:5,   ic:"[USB]"},
+  {n:"Cámara IP",              en:"IP camera",               p:5,   ic:"[cam]"},
+  {n:"Raspberry Pi 4",         en:"Raspberry Pi 4",          p:6,   ic:"[RPi]"},
+  {n:"Tira LED 1m",            en:"LED strip 1m",            p:7.2, ic:"[LEDs]"},
+  {n:"Router WiFi",            en:"WiFi router",             p:8,   ic:"[WiFi]"},
+  {n:"Bombilla LED 10W",       en:"LED bulb 10W",            p:10,  ic:"[L10]"},
+  {n:"Ventilador mesa",        en:"Desk fan",                p:10,  ic:"[vent]"},
+  {n:"Bombilla LED 20W",       en:"LED bulb 20W",            p:20,  ic:"[L20]"},
+  {n:"Frigorífico A+++",       en:"Fridge A+++",             p:25,  ic:"[frig]"},
+  {n:'TV LED 32"',             en:'LED TV 32"',              p:30,  ic:"[TV]"},
+  {n:"Portátil AMD Ryzen 5",   en:"Laptop AMD Ryzen 5",      p:35,  ic:"[PC-e]"},
+  {n:"Portátil Intel i5",      en:"Laptop Intel i5",         p:45,  ic:"[PC-s]"},
+  {n:"Portátil gaming 65W",    en:"Gaming laptop 65W",       p:65,  ic:"[PC-g]"},
+  {n:"Microondas (mín.)",      en:"Microwave (min.)",        p:700, ic:"[mic]"},
 ];
 const BAT=[
-  {n:"Pila AA recargable",        c:3},
-  {n:"Power bank 5000mAh",        c:18.5},
-  {n:"Power bank 10000mAh",       c:37},
-  {n:"Batería 12V 7Ah plomo",     c:67.2},
-  {n:"Batería 12V 20Ah plomo",    c:192},
-  {n:"Batería LiFePO4 12V 20Ah",  c:240},
+  {n:"Pila AA recargable",        en:"Rechargeable AA battery",      c:3},
+  {n:"Power bank 5000mAh",        en:"Power bank 5000mAh",           c:18.5},
+  {n:"Power bank 10000mAh",       en:"Power bank 10000mAh",          c:37},
+  {n:"Batería 12V 7Ah plomo",     en:"12V 7Ah lead-acid battery",    c:67.2},
+  {n:"Batería 12V 20Ah plomo",    en:"12V 20Ah lead-acid battery",   c:192},
+  {n:"Batería LiFePO4 12V 20Ah",  en:"LiFePO4 12V 20Ah battery",    c:240},
 ];
 
 // ════════════════════════════════════════════════════════════════
@@ -448,10 +449,10 @@ function render(){
   set('mT',Math.round(M.dT*1000)+' mm');
   // Balance tab
   set('hP2',f2(M.PW,1)+' W');
-  set('hHog',f2(M.hog,2)+' hogares');
+  set('hHog',f2(M.hog,2)+(currentLang==='en'?' households':' hogares'));
   set('rkwh',f2(M.kh,4)+' kWh/h');
-  set('rkwhd',f2(M.kd,2)+' kWh/día');
-  set('rkwha',fN(M.ka,0)+' kWh/año');
+  set('rkwhd',f2(M.kd,2)+(currentLang==='en'?' kWh/day':' kWh/día'));
+  set('rkwha',fN(M.ka,0)+(currentLang==='en'?' kWh/year':' kWh/año'));
   set('rsol','×'+fN(M.fs,0));
   set('rEC1',f2(M.ec1,1)+' J ('+f2(M.ec1/1000,3)+' kJ)');
   set('rEC2',f2(M.ec2,1)+' J ('+f2(M.ec2/1000,3)+' kJ)');
@@ -459,13 +460,13 @@ function render(){
   set('rfT','×'+f2(M.H/M.h,2)+' (H_rec/h_cil)');
   set('rdc',Math.round(M.d*1000)+' mm');
   set('rhc',Math.round(M.h*1000)+' mm');
-  set('rVc',f2(M.Vc*1000,2)+' litros');
+  set('rVc',f2(M.Vc*1000,2)+(currentLang==='en'?' litres':' litros'));
   set('rdcol',Math.round(M.dc*1000)+' mm');
   set('rMC1',f2(M.MC1,1)+' kg');
   set('rFA',f2(M.FA,1)+' N');
   set('rFn',f2(M.Fn,1)+' N');
   // Sistema T
-  set('tVol',f2(M.VT*1000,2)+' litros');
+  set('tVol',f2(M.VT*1000,2)+(currentLang==='en'?' litres':' litros'));
   set('tdT',Math.round(M.dT*1000)+' mm → DN'+M.dn_T);
   set('thT',f2(M.hT*100,1)+' cm');
   set('tLT',f2(M.LT*100,1)+' cm');
@@ -475,44 +476,49 @@ function render(){
   set('tPf',f2(M.Pf,4)+' bar');
   set('tPN','PN '+M.PN);
   set('tSep',f2(M.sep,2)+' m (3 × d_col)');
-  set('tEst',f2(M.est_largo,2)+'m (largo) × '+f2(M.est_ancho,2)+'m (ancho) × 2.5m');
+  set('tEst',f2(M.est_largo,2)+'m ('+(currentLang==='en'?'length':'largo')+') × '+f2(M.est_ancho,2)+'m ('+(currentLang==='en'?'width':'ancho')+') × 2.5m');
   set('tVest',f2(M.est_largo*M.est_ancho*2.5,1)+' m³ = '+fN(M.est_largo*M.est_ancho*2500,0)+' L');
   // Generador
   const Pnom=Math.ceil(M.PW/100)*100;
-  set('gPn',Pnom+' W (margen '+f2((Pnom/M.PW-1)*100,1)+'%)');
-  set('gV',M.Vs+' V '+(M.Vs===230?'monofásico':'trifásico'));
+  set('gPn',Pnom+' W ('+(currentLang==='en'?'margin':'margen')+' '+f2((Pnom/M.PW-1)*100,1)+'%)');
+  set('gV',M.Vs+' V '+(M.Vs===230?(currentLang==='en'?'single-phase':'monofásico'):(currentLang==='en'?'three-phase':'trifásico')));
   set('gI',f2(M.In,2)+' A');
   set('gv',f2(M.vcil*1000,1)+' mm/s');
   set('gvp',f2(M.vcil*1.5*1000,1)+' mm/s');
   set('gF',f2(M.Fmax,1)+' N = '+f2(M.Fmax/1000,3)+' kN');
-  set('gpol',M.npol+' polos');
-  set('gInv',Pnom+' W monofásico 230V 50Hz');
+  set('gpol',M.npol+(currentLang==='en'?' poles':' polos'));
+  set('gInv',Pnom+(currentLang==='en'?' W single-phase 230V 50Hz':' W monofásico 230V 50Hz'));
   // Electrod.
   const P=M.PW;
   set('ewh',f2(P,3)+' Wh/h');
-  set('ewhd',f2(P*24,1)+' Wh/día');
-  set('ekwha',fN(M.ka,0)+' kWh/año');
+  set('ewhd',f2(P*24,1)+(currentLang==='en'?' Wh/day':' Wh/día'));
+  set('ekwha',fN(M.ka,0)+(currentLang==='en'?' kWh/year':' kWh/año'));
   const ok=EL.filter(e=>e.p<=P),no=EL.filter(e=>e.p>P);
   document.getElementById('etok').innerHTML=ok.length?ok.map(e=>{
     const n=Math.floor(P/e.p),pct=Math.min(100,P/e.p*100);
-    return `<div class="ei-ok"><span class="ei-ic">${e.ic}</span><span class="ei-n">${n>1?n+'× ':''}${e.n}</span><span class="ei-p">${e.p}W</span><div class="ebar2"><div class="ebar2-f" style="width:${pct}%"></div></div></div>`;
-  }).join(''):'<div class="rr" style="color:var(--muted);font-size:11px">Usar batería como acumulador</div>';
+    const nm_ok = (currentLang==='en' && e.en) ? e.en : e.n;
+    return `<div class="ei-ok"><span class="ei-ic">${e.ic}</span><span class="ei-n">${n>1?n+'× ':''}${nm_ok}</span><span class="ei-p">${e.p}W</span><div class="ebar2"><div class="ebar2-f" style="width:${pct}%"></div></div></div>`;
+  }).join(''):'<div class="rr" style="color:var(--muted);font-size:11px">'+(currentLang==='en'?'Use battery as accumulator':'Usar batería como acumulador')+'</div>';
   document.getElementById('etno').innerHTML=no.slice(0,8).map(e=>{
     const pct=Math.min(100,P/e.p*100);
-    return `<div class="ei-no"><span class="ei-ic">${e.ic}</span><span class="ei-n">${e.n}</span><span class="ei-p">${e.p}W</span><div class="ebar2"><div class="ebar2-f" style="width:${pct}%"></div></div></div>`;
+    const nm_no = (currentLang==='en' && e.en) ? e.en : e.n;
+    return `<div class="ei-no"><span class="ei-ic">${e.ic}</span><span class="ei-n">${nm_no}</span><span class="ei-p">${e.p}W</span><div class="ebar2"><div class="ebar2-f" style="width:${pct}%"></div></div></div>`;
   }).join('');
   // Batería
   const Wd=P*24;
   document.getElementById('bcarga').innerHTML=BAT.map(b=>{
     const d=b.c/Wd,h2=b.c/P;
-    const ts=d<1?f2(h2,1)+'h':f2(d,1)+' días ('+f2(h2,1)+'h)';
-    return `<div class="bc"><h5>${b.n} — ${b.c} Wh</h5><div class="br"><span class="bk">Tiempo de carga</span><span class="bv">${ts}</span></div></div>`;
+    const bn = (currentLang==='en' && b.en) ? b.en : b.n;
+    const ts=d<1?f2(h2,1)+'h':f2(d,1)+(currentLang==='en'?' days':' días')+'('+f2(h2,1)+'h)';
+    const lbl_bat = currentLang==='en' ? 'Charging time' : 'Tiempo de carga';
+    return `<div class="bc"><h5>${bn} — ${b.c} Wh</h5><div class="br"><span class="bk">${lbl_bat}</span><span class="bv">${ts}</span></div></div>`;
   }).join('');
   const bRef=240;
   const noFilt=no.filter(e=>{const th=bRef/e.p;return th*60>=5;});
   document.getElementById('buso').innerHTML=noFilt.length?noFilt.map(e=>{
     const th=bRef/e.p,ts=th>=1?f2(th,1)+'h':Math.round(th*60)+' min';
-    return `<div class="rr"><span class="rk">${e.n} (${e.p}W)</span><span class="rv t">${ts}</span></div>`;
+    const nm_buso = (currentLang==='en' && e.en) ? e.en : e.n;
+    return `<div class="rr"><span class="rk">${nm_buso} (${e.p}W)</span><span class="rv t">${ts}</span></div>`;
   }).join(''):'<div class="rr" style="color:var(--muted)">—</div>';
 }
 
@@ -630,7 +636,7 @@ function toggleAnim(){
   b.classList.toggle('on',aRun);
   if(aRun)requestAnimationFrame(animStep);
 }
-function resetAnim(){aT=0;aCyc=0;set('cyc','ciclo 0');drawFrame(0);}
+function resetAnim(){aT=0;aCyc=0;set('cyc',(currentLang==='en'?'cycle':'ciclo')+' 0');drawFrame(0);}
 
 function animStep(ts){
   if(!aRun){lastTS=0;return;}
@@ -1135,8 +1141,8 @@ function drawFrame(t){
 
   // Conductos de agua: parte vertical hasta borde superior de la T,
   // luego codo de 90° horizontal hasta el extremo de la T
-  drawTube(cx_agua_izq, cond_w_agua, cond_top, cond_bot_agua, true,  actAguaIzq, 'agua', 'C1↑');
-  drawTube(cx_agua_der, cond_w_agua, cond_top, cond_bot_agua, true,  actAguaDer, 'agua', 'C2↑');
+  drawTube(cx_agua_izq, cond_w_agua, cond_top, cond_bot_agua, true,  actAguaIzq, currentLang==='en'?'water':'agua', 'C1↑');
+  drawTube(cx_agua_der, cond_w_agua, cond_top, cond_bot_agua, true,  actAguaDer, currentLang==='en'?'water':'agua', 'C2↑');
 
   // ── Codos horizontales de los conductos de agua ─────────────
   // Los codos quedan POR DEBAJO de los conductos de aire (que terminan en Ty+cond_w_aire).
@@ -1170,8 +1176,8 @@ function drawFrame(t){
   // Codo derecho: T_x_der2 → borde-izq del tubo agua der
   drawElbow(T_x_der2, cx_agua_der - cond_w_agua/2, actAguaDer);
   // Conductos de aire (independientes, terminan encima de la T — válvula check en su extremo inferior)
-  drawTube(cx_aire_izq, cond_w_aire, cond_top, cond_bot_aire, false, actAireIzq, 'aire', 'C2↓');
-  drawTube(cx_aire_der, cond_w_aire, cond_top, cond_bot_aire, false, actAireDer, 'aire', 'C1↓');
+  drawTube(cx_aire_izq, cond_w_aire, cond_top, cond_bot_aire, false, actAireIzq, currentLang==='en'?'air':'aire', 'C2↓');
+  drawTube(cx_aire_der, cond_w_aire, cond_top, cond_bot_aire, false, actAireDer, currentLang==='en'?'air':'aire', 'C1↓');
 
   // ── Palo vertical columna→T ───────────────────────────────────
   const palo_w = colW*0.35;
@@ -1366,7 +1372,7 @@ function drawFrame(t){
       ctx.fillStyle = '#66aaff';
       ctx.font = `bold ${ext_lfs}px Rajdhani`;
       ctx.textAlign = 'center';
-      ctx.fillText('agua émbolo', ext_left + ext_len2/2, ext_y - ext_h/2 - 4);
+      ctx.fillText(currentLang==='en'?'piston water':'agua émbolo', ext_left + ext_len2/2, ext_y - ext_h/2 - 4);
       ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
     });
   }
@@ -1379,10 +1385,10 @@ function drawFrame(t){
     ctx.textAlign='center';
     ctx.shadowColor='rgba(0,0,0,0.95)'; ctx.shadowBlur=4; ctx.shadowOffsetY=1;
     ctx.fillStyle='#ffe066'; ctx.font=`bold ${T_fs}px Rajdhani`;
-    ctx.fillText('SISTEMA T · DN'+M.dn_T, Tx, Ty+T_lh*1.0);
+    ctx.fillText((currentLang==='en'?'T SYSTEM · DN':'SISTEMA T · DN')+M.dn_T, Tx, Ty+T_lh*1.0);
     ctx.fillStyle='#ffffff'; ctx.font=`${T_fs2}px Rajdhani`;
-    ctx.fillText('DESAGUE HACIA LA SUPERFICIE', Tx, Ty+T_lh*2.1);
-    ctx.fillText('POR PRESION HIDROSTATICA',    Tx, Ty+T_lh*3.1);
+    ctx.fillText(currentLang==='en'?'DRAIN TO SURFACE':'DESAGUE HACIA LA SUPERFICIE', Tx, Ty+T_lh*2.1);
+    ctx.fillText(currentLang==='en'?'BY HYDROSTATIC PRESSURE':'POR PRESION HIDROSTATICA', Tx, Ty+T_lh*3.1);
     ctx.shadowColor='transparent'; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
   }
 
@@ -1464,7 +1470,7 @@ function drawFrame(t){
       ctx.textAlign = 'center';
       ctx.shadowColor = 'rgba(0,0,0,0.90)'; ctx.shadowBlur = 3;
       ctx.fillStyle = '#66ccff';
-      ctx.fillText('entrada agua', tube_x + fc_len/2, fc_y - 4);
+      ctx.fillText(currentLang==='en'?'water inlet':'entrada agua', tube_x + fc_len/2, fc_y - 4);
       ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
     });
   }
@@ -1560,14 +1566,14 @@ function drawFrame(t){
   const Ea=phase==='down'?M.ec1*ep:M.ec1+M.ec2*ep;
 
   const pill=document.getElementById('ppill');
-  pill.textContent=phase==='down'?'C1 DESCENDENTE (gravedad)':'C2 ASCENDENTE (Arquímedes)';
+  pill.textContent=phase==='down'?(currentLang==='en'?'C1 DESCENDING (gravity)':'C1 DESCENDENTE (gravedad)'):(currentLang==='en'?'C2 ASCENDING (Archimedes)':'C2 ASCENDENTE (Arquímedes)');
   pill.className='phase-pill '+(phase==='down'?'ph-down':'ph-up');
   set('ht',f2(t,1)+'s');
   set('hE',Math.round(Ea)+' J');
   set('hP',Math.round(Pi)+' W');
   document.getElementById('bc1').style.width=(phase==='down'?ep*100:100)+'%';
   document.getElementById('bc2').style.width=(phase==='up'?ep*100:0)+'%';
-  set('cyc','ciclo '+aCyc);
+  set('cyc',(currentLang==='en'?'cycle':'ciclo')+' '+aCyc);
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -1588,6 +1594,488 @@ window.addEventListener('load',()=>{
   preset('A');
   new ResizeObserver(()=>{if(!aRun)drawFrame(aT);}).observe(document.getElementById('cv'));
 });
+
+// ════════════════════════════════════════════════════════════════
+// BILINGUAL i18n SYSTEM
+// ════════════════════════════════════════════════════════════════
+let currentLang = 'es';
+
+const i18n = {
+  es: {
+    // Header
+    pat_badge: 'PATENTE CONCEDIDA',
+    h1_title: 'GENERADOR CONCÉNTRICO',
+    tag_rev: 'REV.15 · T LATERAL',
+    // Presets
+    preset_title: 'Presets',
+    preset_a: '★ A',
+    preset_a_sub: '1 hogar',
+    preset_b_sub: '2 hog.',
+    preset_proto: 'Proto',
+    preset_proto_sub: 'PVC',
+    // Sliders
+    sl_cil_title: 'Cilindro',
+    sl_r_lbl: 'Radio r (m)',
+    sl_h_lbl: 'Altura h (m)',
+    sl_e_lbl: 'Pared e (mm)',
+    sl_col_title: 'Columna / Estanque',
+    sl_hol_lbl: 'Holgura radial (cm)',
+    sl_H_lbl: 'H_rec / columna (m)',
+    sl_eta_lbl: 'Eficiencia η',
+    sl_res_title: 'Resultados rápidos',
+    mm_P_lbl: 'Potencia (W)',
+    mm_H_lbl: 'Hogares',
+    mm_K_lbl: 'kWh/año',
+    mm_T_lbl: 'T diam. (mm)',
+    sl_anim_title: 'Animación',
+    sl_spd_lbl: 'Velocidad',
+    btn_play: '▶ PLAY',
+    btn_pause: '⏸ PAUSA',
+    // Tabs
+    tab_balance: 'Balance',
+    tab_sistat: 'Sistema T',
+    tab_gen: 'Generador',
+    tab_grafica: 'Gráfica',
+    tab_elec: 'Electrod.',
+    tab_bat: 'Batería',
+    // Balance tab
+    h_hog_lbl: 'Hogares (3500 kWh/año IDAE)',
+    h_P_lbl: 'Potencia media continua',
+    rt_prod: 'Producción anual',
+    rk_kwh: 'kWh/hora',
+    rk_kwhd: 'kWh/día',
+    rk_kwha: 'kWh/año',
+    rk_fc: 'Factor capacidad',
+    rk_fc_val: '100% continuo',
+    rk_solar: 'vs panel solar 400W',
+    rt_ciclo: 'Ciclo (30 s)',
+    rk_ec1: 'E C1 neta (gravedad)',
+    rk_ec2: 'E C2 neta (Arquímedes)',
+    rk_et_sys: 'E sistema T (evacuación)',
+    rk_et_sys_val: '0 J — estanque paga',
+    rk_etot: 'E total neta/ciclo',
+    rk_fT: 'Factor H_rec / h_cil',
+    rt_geo: 'Geometría y masas',
+    rk_dc: 'Diámetro cilindro',
+    rk_hc: 'Altura cilindro',
+    rk_Vc: 'Volumen cilindro',
+    rk_dcol: 'Diámetro columna',
+    rk_MC1: 'Masa C1 lleno',
+    rk_FA: 'Empuje Arquímedes',
+    rk_Fn: 'Fuerza neta C2',
+    // T System tab
+    ht_desc_val: 'T LATERAL',
+    ht_desc_lbl: 'Dispuesta al lado de la columna · Recorrido completo',
+    rt_tdim: 'Dimensiones de la T',
+    rk_tvol: 'Volumen a almacenar',
+    rk_tdT: 'Diámetro interior brazos',
+    rk_thT: 'Longitud de los brazos',
+    rk_tLT: 'Longitud barra horizontal',
+    rk_tmat: 'Material recomendado',
+    rk_tmat_val: 'AISI 316L soldado',
+    rt_tcond: 'Conducto desagüe (T → superficie)',
+    rk_tQ: 'Caudal evacuación',
+    rk_tDc: 'DN conducto calculado',
+    rk_tLc: 'Longitud conducto',
+    rk_tv: 'Velocidad flujo diseño',
+    rk_tv_val: '1.5 m/s',
+    rt_tpres: 'Presión y válvulas',
+    rk_tPf: 'Presión fondo estanque',
+    rk_tPN: 'Clase válvulas',
+    rk_temb: 'Émbolo',
+    rk_temb_val: 'HDPE + O-ring PTFE',
+    rk_topex: 'OPEX evacuación',
+    rk_topex_val: '0 € — estanque paga',
+    rt_test: 'Estanque (1 módulo)',
+    rk_tSep: 'Separación módulos',
+    rk_tEst: 'Dimensiones planta',
+    rk_tVest: 'Volumen estanque',
+    // Generator tab
+    gt_desc: 'Transverse Flux Permanent Magnet Generator',
+    rt_gelec: 'Especificación eléctrica',
+    rk_gPn: 'Potencia nominal',
+    rk_gV: 'Tensión de salida',
+    rk_gI: 'Corriente nominal',
+    rk_gIP: 'Protección IP',
+    rk_gIP_val: 'IP65',
+    rk_gnorm: 'Norma aplicable',
+    rk_gnorm_val: 'IEC 60034-1 + 60529 IP65',
+    rt_gmec: 'Parámetros mecánicos',
+    rk_gv: 'Velocidad lineal media',
+    rk_gvp: 'Velocidad lineal pico',
+    rk_gF: 'Fuerza máxima diseño',
+    rk_gpol: 'Nº polos estátor',
+    rk_gstep: 'Paso polar',
+    rk_gstep_val: '100 mm',
+    rt_gmat: 'Materiales',
+    rk_gmag: 'Magnetos (cilindro/rotor)',
+    rk_gmag_val: 'NdFeB N52',
+    rk_glam: 'Laminaciones (columna)',
+    rk_glam_val: 'FeSi 3% M270-50A',
+    rk_gwind: 'Bobinado',
+    rk_gwind_val: 'Cu esmaltado clase H',
+    rk_genc: 'Encapsulado magnetos',
+    rk_genc_val: 'Epoxy marino IP68',
+    rt_gpow: 'Electrónica de potencia',
+    rk_grec: 'Rectificador',
+    rk_grec_val: 'Puente IGBT 6 pulsos',
+    rk_greg: 'Regulador',
+    rk_greg_val: 'MPPT activo',
+    rk_ginv: 'Inversor',
+    rk_gbat: 'Batería buffer',
+    rk_gbat_val: 'LiFePO4 2–5 kWh BMS',
+    // Charts tab
+    rt_ch1: 'Potencia instantánea por fase (ciclo 30s)',
+    rt_ch2: 'Potencia vs H_rec — efecto Sistema T',
+    rt_ch3: 'Comparativa configuraciones',
+    // Appliances tab
+    rt_eprod: 'Energía producida',
+    rk_ewh: 'Por hora',
+    rk_ewhd: 'Por día',
+    rk_ekwha: 'Por año',
+    etok_title: '✓ Puede alimentar directamente',
+    etno_title: '✗ Insuficiente sin batería',
+    // Battery tab
+    rt_bcarga: 'Tiempo de carga por batería',
+    rt_buso: 'Con LiFePO4 240 Wh — autonomía',
+    // HUD
+    phase_down: 'C1 DESCENDENTE (gravedad)',
+    phase_up: 'C2 ASCENDENTE (Arquímedes)',
+    hud_t: 't ciclo',
+    hud_E: 'E acum.',
+    hud_P: 'P inst.',
+    hud_cyc: 'ciclo',
+  },
+  en: {
+    pat_badge: 'PATENT GRANTED',
+    h1_title: 'CONCENTRIC GENERATOR',
+    tag_rev: 'REV.15 · LATERAL T',
+    preset_title: 'Presets',
+    preset_a: '★ A',
+    preset_a_sub: '1 home',
+    preset_b_sub: '2 homes',
+    preset_proto: 'Proto',
+    preset_proto_sub: 'PVC',
+    sl_cil_title: 'Cylinder',
+    sl_r_lbl: 'Radius r (m)',
+    sl_h_lbl: 'Height h (m)',
+    sl_e_lbl: 'Wall e (mm)',
+    sl_col_title: 'Column / Tank',
+    sl_hol_lbl: 'Radial clearance (cm)',
+    sl_H_lbl: 'H_rec / column (m)',
+    sl_eta_lbl: 'Efficiency η',
+    sl_res_title: 'Quick results',
+    mm_P_lbl: 'Power (W)',
+    mm_H_lbl: 'Households',
+    mm_K_lbl: 'kWh/year',
+    mm_T_lbl: 'T diam. (mm)',
+    sl_anim_title: 'Animation',
+    sl_spd_lbl: 'Speed',
+    btn_play: '▶ PLAY',
+    btn_pause: '⏸ PAUSE',
+    tab_balance: 'Balance',
+    tab_sistat: 'T System',
+    tab_gen: 'Generator',
+    tab_grafica: 'Chart',
+    tab_elec: 'Appliances',
+    tab_bat: 'Battery',
+    h_hog_lbl: 'Households (3500 kWh/yr)',
+    h_P_lbl: 'Continuous average power',
+    rt_prod: 'Annual production',
+    rk_kwh: 'kWh/hour',
+    rk_kwhd: 'kWh/day',
+    rk_kwha: 'kWh/year',
+    rk_fc: 'Capacity factor',
+    rk_fc_val: '100% continuous',
+    rk_solar: 'vs 400W solar panel',
+    rt_ciclo: 'Cycle (30 s)',
+    rk_ec1: 'E C1 net (gravity)',
+    rk_ec2: 'E C2 net (Archimedes)',
+    rk_et_sys: 'E T system (evacuation)',
+    rk_et_sys_val: '0 J — tank pays',
+    rk_etot: 'Total net E/cycle',
+    rk_fT: 'Factor H_rec / h_cil',
+    rt_geo: 'Geometry & masses',
+    rk_dc: 'Cylinder diameter',
+    rk_hc: 'Cylinder height',
+    rk_Vc: 'Cylinder volume',
+    rk_dcol: 'Column diameter',
+    rk_MC1: 'Mass C1 full',
+    rk_FA: 'Archimedes thrust',
+    rk_Fn: 'Net force C2',
+    ht_desc_val: 'LATERAL T',
+    ht_desc_lbl: 'Placed alongside the column · Full travel',
+    rt_tdim: 'T dimensions',
+    rk_tvol: 'Volume to store',
+    rk_tdT: 'Arm inner diameter',
+    rk_thT: 'Arm length',
+    rk_tLT: 'Horizontal bar length',
+    rk_tmat: 'Recommended material',
+    rk_tmat_val: 'Welded AISI 316L',
+    rt_tcond: 'Drain conduit (T → surface)',
+    rk_tQ: 'Evacuation flow',
+    rk_tDc: 'Calculated conduit DN',
+    rk_tLc: 'Conduit length',
+    rk_tv: 'Design flow velocity',
+    rk_tv_val: '1.5 m/s',
+    rt_tpres: 'Pressure & valves',
+    rk_tPf: 'Tank bottom pressure',
+    rk_tPN: 'Valve class',
+    rk_temb: 'Piston',
+    rk_temb_val: 'HDPE + PTFE O-ring',
+    rk_topex: 'Evacuation OPEX',
+    rk_topex_val: '0 € — tank pays',
+    rt_test: 'Tank (1 module)',
+    rk_tSep: 'Module separation',
+    rk_tEst: 'Plan dimensions',
+    rk_tVest: 'Tank volume',
+    gt_desc: 'Transverse Flux Permanent Magnet Generator',
+    rt_gelec: 'Electrical specification',
+    rk_gPn: 'Nominal power',
+    rk_gV: 'Output voltage',
+    rk_gI: 'Nominal current',
+    rk_gIP: 'IP protection',
+    rk_gIP_val: 'IP65',
+    rk_gnorm: 'Applicable standard',
+    rk_gnorm_val: 'IEC 60034-1 + 60529 IP65',
+    rt_gmec: 'Mechanical parameters',
+    rk_gv: 'Average linear speed',
+    rk_gvp: 'Peak linear speed',
+    rk_gF: 'Max design force',
+    rk_gpol: 'Stator poles',
+    rk_gstep: 'Pole pitch',
+    rk_gstep_val: '100 mm',
+    rt_gmat: 'Materials',
+    rk_gmag: 'Magnets (cylinder/rotor)',
+    rk_gmag_val: 'NdFeB N52',
+    rk_glam: 'Laminations (column)',
+    rk_glam_val: 'FeSi 3% M270-50A',
+    rk_gwind: 'Winding',
+    rk_gwind_val: 'Enamelled Cu class H',
+    rk_genc: 'Magnet encapsulation',
+    rk_genc_val: 'Marine epoxy IP68',
+    rt_gpow: 'Power electronics',
+    rk_grec: 'Rectifier',
+    rk_grec_val: '6-pulse IGBT bridge',
+    rk_greg: 'Regulator',
+    rk_greg_val: 'Active MPPT',
+    rk_ginv: 'Inverter',
+    rk_gbat: 'Buffer battery',
+    rk_gbat_val: 'LiFePO4 2–5 kWh BMS',
+    rt_ch1: 'Instantaneous power per phase (30s cycle)',
+    rt_ch2: 'Power vs H_rec — T System effect',
+    rt_ch3: 'Configuration comparison',
+    rt_eprod: 'Energy produced',
+    rk_ewh: 'Per hour',
+    rk_ewhd: 'Per day',
+    rk_ekwha: 'Per year',
+    etok_title: '✓ Can power directly',
+    etno_title: '✗ Insufficient without battery',
+    rt_bcarga: 'Charging time per battery',
+    rt_buso: 'With LiFePO4 240 Wh — autonomy',
+    phase_down: 'C1 DESCENDING (gravity)',
+    phase_up: 'C2 ASCENDING (Archimedes)',
+    hud_t: 'cycle t',
+    hud_E: 'E accum.',
+    hud_P: 'P inst.',
+    hud_cyc: 'cycle',
+  }
+};
+
+function t(key) { return i18n[currentLang][key] || i18n.es[key] || key; }
+
+function applyLang() {
+  const L = currentLang;
+  // Header
+  document.getElementById('pat_badge').textContent = t('pat_badge');
+  document.querySelector('header h1').textContent = t('h1_title');
+  document.querySelector('header .tag').textContent = t('tag_rev');
+  // Update button active states
+  ['lang_btn_es','lang_btn_en'].forEach(id => {
+    const btn = document.getElementById(id);
+    if(!btn) return;
+    const isActive = (id==='lang_btn_es' && L==='es') || (id==='lang_btn_en' && L==='en');
+    btn.style.background = isActive ? 'rgba(0,200,240,.35)' : 'rgba(0,200,240,.12)';
+    btn.style.fontWeight = isActive ? '900' : '700';
+  });
+
+  // Controls — section titles
+  const csTitles = document.querySelectorAll('.cs-title');
+  const csTitleKeys = ['preset_title','sl_cil_title','sl_col_title','sl_res_title','sl_anim_title'];
+  csTitles.forEach((el,i) => { if(csTitleKeys[i]) el.textContent = t(csTitleKeys[i]); });
+
+  // Slider labels (text nodes before the <span>)
+  [['sr','sl_r_lbl'],['sh','sl_h_lbl'],['se','sl_e_lbl'],
+   ['shol','sl_hol_lbl'],['sH','sl_H_lbl'],['seta','sl_eta_lbl']].forEach(([id, key]) => {
+    const row = document.getElementById(id)?.closest('.sl-row');
+    if(row) {
+      const lbl = row.querySelector('label');
+      if(lbl) {
+        const span = lbl.querySelector('span');
+        lbl.childNodes[0].textContent = t(key);
+        // re-attach span
+      }
+    }
+  });
+
+  // Mini metric labels
+  document.querySelector('#mP')?.closest('.mm')?.querySelector('.l')
+    ?.setAttribute('data-i18n','mm_P_lbl');
+  [['mP','mm_P_lbl'],['mH','mm_H_lbl'],['mK','mm_K_lbl'],['mT','mm_T_lbl']].forEach(([id,key])=>{
+    const mm = document.getElementById(id)?.closest('.mm');
+    if(mm) mm.querySelector('.l').textContent = t(key);
+  });
+
+  // Speed label
+  const spdRow = document.getElementById('sspd')?.closest('.sl-row');
+  if(spdRow) spdRow.querySelector('label').childNodes[0].textContent = t('sl_spd_lbl');
+
+  // Tabs
+  document.querySelectorAll('.tab').forEach(tab => {
+    const fn = tab.getAttribute('onclick');
+    if(!fn) return;
+    const name = fn.match(/tab\(this,'(\w+)'\)/)?.[1];
+    const keys = {balance:'tab_balance',sistat:'tab_sistat',gen:'tab_gen',
+                  grafica:'tab_grafica',elec:'tab_elec',bat:'tab_bat'};
+    if(keys[name]) tab.textContent = t(keys[name]);
+  });
+
+  // Balance tab static labels
+  const staticLabels = {
+    'h_hog_lbl': t('h_hog_lbl'),
+    'h_P_lbl':   t('h_P_lbl'),
+  };
+  // Update .hl elements inside .hb boxes
+  document.querySelectorAll('.hb .hl').forEach((el,i) => {
+    if(i===0) el.textContent = t('h_P_lbl');
+    if(i===1) el.textContent = t('h_hog_lbl');
+    if(i===2) el.textContent = t('ht_desc_lbl');
+  });
+
+  // Row labels — use data attributes for mapping
+  const rkMap = {
+    'rkwh':  'rk_kwh',  'rkwhd': 'rk_kwhd', 'rkwha': 'rk_kwha',
+    'rsol':  'rk_solar',
+    'rEC1':  'rk_ec1',  'rEC2':  'rk_ec2',
+    'rET':   'rk_etot', 'rfT':   'rk_fT',
+    'rdc':   'rk_dc',   'rhc':   'rk_hc',   'rVc':   'rk_Vc',
+    'rdcol': 'rk_dcol', 'rMC1':  'rk_MC1',
+    'rFA':   'rk_FA',   'rFn':   'rk_Fn',
+    'tVol':  'rk_tvol', 'tdT':   'rk_tdT',  'thT':   'rk_thT', 'tLT': 'rk_tLT',
+    'tQ':    'rk_tQ',   'tDc':   'rk_tDc',  'tLc':   'rk_tLc',
+    'tPf':   'rk_tPf',  'tPN':   'rk_tPN',
+    'tSep':  'rk_tSep', 'tEst':  'rk_tEst', 'tVest': 'rk_tVest',
+    'gPn':   'rk_gPn',  'gV':    'rk_gV',   'gI':    'rk_gI',
+    'gv':    'rk_gv',   'gvp':   'rk_gvp',  'gF':    'rk_gF',
+    'gpol':  'rk_gpol', 'gInv':  'rk_ginv',
+    'ewh':   'rk_ewh',  'ewhd':  'rk_ewhd', 'ekwha': 'rk_ekwha',
+  };
+  Object.entries(rkMap).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    const rr = el.closest('.rr');
+    if(rr) {
+      const rk = rr.querySelector('.rk');
+      if(rk) rk.textContent = t(key);
+    }
+  });
+
+  // Static value cells that don't change with M
+  // Apply static .rv translations via reverse-map lookup
+  {
+    const svKeys = ['rk_fc_val','rk_et_sys_val','rk_tmat_val','rk_tv_val','rk_temb_val',
+      'rk_topex_val','rk_gIP_val','rk_gnorm_val','rk_gstep_val','rk_gmag_val',
+      'rk_glam_val','rk_gwind_val','rk_genc_val','rk_grec_val','rk_greg_val','rk_gbat_val'];
+    const svMap = {};
+    svKeys.forEach(k => { if(i18n.es[k]) svMap[i18n.es[k]]=k; if(i18n.en[k]) svMap[i18n.en[k]]=k; });
+    document.querySelectorAll('.rr .rv').forEach(rv => {
+      const key = svMap[rv.textContent.trim()];
+      if(key) rv.textContent = t(key);
+    });
+  }
+  // Section titles (rt_*)
+  document.querySelectorAll('.rt').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if(key) el.textContent = t(key);
+  });
+
+  // Charts tab titles
+  document.querySelectorAll('.rt[data-i18n]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+
+  // Appliances section titles
+  const etokTitle = document.getElementById('etok_title');
+  if(etokTitle) etokTitle.textContent = t('etok_title');
+  document.querySelectorAll('.rs .rt').forEach(el => {
+    if(el.textContent.includes('✓') || el.textContent.includes('Can') || el.textContent.includes('Puede'))
+      el.textContent = t('etok_title');
+    if(el.textContent.includes('✗') || el.textContent.includes('Insuf'))
+      el.textContent = t('etno_title');
+  });
+
+  // Energy produced section
+  document.querySelectorAll('#tc_elec .rt').forEach((el,i) => {
+    if(i===0) el.textContent = t('rt_eprod');
+  });
+  document.querySelectorAll('#tc_bat .rt').forEach((el,i) => {
+    if(i===0) el.textContent = t('rt_bcarga');
+    if(i===1) el.textContent = t('rt_buso');
+  });
+
+  // HUD
+  document.querySelector('.hud-stat:nth-child(2) .sl').textContent = t('hud_t');
+  document.querySelector('.hud-stat:nth-child(3) .sl').textContent = t('hud_E');
+  document.querySelector('.hud-stat:nth-child(4) .sl').textContent = t('hud_P');
+
+  // Re-render to update dynamic content
+  if(M) render();
+  if(document.getElementById('tc_grafica').classList.contains('on')) drawCharts();
+}
+
+// Patch render() to use i18n for dynamic strings
+const _origRender = render;
+render = function() {
+  _origRender();
+  if(!M) return;
+  // Update static row labels that render() doesn't touch
+  document.querySelectorAll('.rr').forEach(rr => {
+    const rk = rr.querySelector('.rk');
+    const rv = rr.querySelector('.rv');
+    if(!rk || !rv) return;
+    const txt = rk.textContent;
+    // Map current text to key (works for both languages)
+    const reverseMap = {};
+    ['es','en'].forEach(lang => {
+      Object.entries(i18n[lang]).forEach(([k,v]) => { reverseMap[v] = k; });
+    });
+    const key = reverseMap[txt];
+    if(key && i18n[currentLang][key]) rk.textContent = i18n[currentLang][key];
+  });
+};
+
+function setLang(lang) {
+  currentLang = lang;
+  applyLang();
+}
+function toggleLang() { setLang(currentLang === 'es' ? 'en' : 'es'); }
+
+// Canvas texts use currentLang via t()
+// Patch drawFrame to use i18n for canvas text
+const _drawFrame = drawFrame;
+drawFrame = function(time) {
+  _drawFrame(time);
+  // Phase pill text is set inside drawFrame via set() — we override after
+  const pill = document.getElementById('ppill');
+  if(pill) {
+    const isDown = pill.classList.contains('ph-down');
+    pill.textContent = isDown ? t('phase_down') : t('phase_up');
+  }
+  // cycle counter
+  const cyc = document.getElementById('cyc');
+  if(cyc) cyc.textContent = t('hud_cyc') + ' ' + aCyc;
+};
+
 </script>
 </body>
 </html>

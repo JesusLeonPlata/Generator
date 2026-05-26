@@ -138,6 +138,20 @@ canvas.chart{width:100%!important;display:block}
     </div>
   </div>
   <div>
+    <div class="cs-title" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>Geometría T</span>
+      <span id="kT-info" style="font-size:9px;color:var(--teal);letter-spacing:.5px;">V<sub>T</sub> constante</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px;margin-top:7px">
+      <div class="sl-row">
+        <label><span data-i18n="sl_kT_lbl">Alto ↕ / Ancho ↔</span><span id="lkT">×1.00</span></label>
+        <input type="range" id="skT" min="0.30" max="3.00" step="0.05" value="1.00"
+          oninput="document.getElementById('lkT').textContent='×'+parseFloat(this.value).toFixed(2);upd()">
+      </div>
+      <div id="kT-dims" style="display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;font-size:9.5px;color:var(--muted);padding:4px 2px"></div>
+    </div>
+  </div>
+  <div>
     <div class="cs-title">Resultados rápidos</div>
     <div class="mm-grid" style="margin-top:7px">
       <div class="mm"><div class="v" id="mP">—</div><div class="l">Potencia (W)</div></div>
@@ -153,6 +167,17 @@ canvas.chart{width:100%!important;display:block}
       <button class="ba" onclick="resetAnim()">↺</button>
     </div>
     <div class="sl-row" style="margin-top:9px"><label>Velocidad<span id="lspd">1.0×</span></label><input type="range" id="sspd" min=".2" max="8" step=".1" value="1" oninput="this.nextElementSibling;document.getElementById('lspd').textContent=parseFloat(this.value).toFixed(1)+'×';animSpeed=+this.value"></div>
+  </div>
+  <div style="margin-top:10px">
+    <div class="cs-title"><span data-i18n="cs_farm_title">Escalado granja</span></div>
+    <div style="margin-top:6px">
+      <div style="display:flex;justify-content:space-between;font-size:9.5px;color:var(--muted);margin-bottom:3px"><span><span data-i18n="farm_nmod">Nº módulos</span></span><span id="lnmod" style="color:var(--teal);font-weight:700">×1</span></div>
+      <input type="range" id="snmod_tech" min="1" max="500" step="1" value="1" style="width:100%" oninput="document.getElementById('lnmod').textContent='×'+this.value;renderFarmScale()">
+      <div id="farm-mini" style="display:grid;grid-template-columns:1fr 1fr;gap:3px 8px;font-size:9.5px;color:var(--muted);margin-top:5px"></div>
+    </div>
+  </div>
+  <div style="margin-top:10px">
+    <button onclick="generarInformePVC()" style="display:none;width:100%;padding:8px 0;border-radius:5px;border:1px solid var(--amber);background:rgba(240,168,0,.13);color:var(--amber);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(240,168,0,.25)'" onmouseout="this.style.background='rgba(240,168,0,.13)'">📋 INFORME MONTAJE PVC</button>
   </div>
 </aside>
 
@@ -174,13 +199,111 @@ canvas.chart{width:100%!important;display:block}
 
 <!-- ═══ PANEL DE PESTAÑAS ════════════════════════════════════ -->
 <aside class="results">
-  <div class="tabs">
+  <!-- MODE BAR -->
+  <div style="display:flex;gap:0;padding:6px 10px 0;background:var(--bg);border-bottom:1px solid var(--brd);flex-shrink:0">
+    <button id="mbtn-simple"   onclick="setMode('simple')"   style="flex:1;padding:4px 0;border:1px solid var(--brd);border-right:none;border-radius:4px 0 0 4px;background:transparent;color:var(--muted);font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer;transition:all .15s"><span data-i18n="mbtn_simple">⬡ SIMPLE</span></button>
+    <button id="mbtn-tecnico"  onclick="setMode('tecnico')"  style="flex:1;padding:4px 0;border:1px solid var(--teal);border-radius:0;background:rgba(0,200,240,.15);color:var(--teal);font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer;transition:all .15s"><span data-i18n="mbtn_tecnico">⚙ TÉCNICO</span></button>
+    <button id="mbtn-inversor" onclick="setMode('inversor')" style="flex:1;padding:4px 0;border:1px solid var(--brd);border-left:none;border-radius:0 4px 4px 0;background:transparent;color:var(--muted);font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer;transition:all .15s"><span data-i18n="mbtn_inv">€ INVERSOR</span></button>
+  </div>
+
+  <!-- TECH TABS -->
+  <div id="tech-tabs" class="tabs">
     <div class="tab on" onclick="tab(this,'balance')">Balance</div>
     <div class="tab" onclick="tab(this,'sistat')">Sistema T</div>
     <div class="tab" onclick="tab(this,'gen')">Generador</div>
     <div class="tab" onclick="tab(this,'grafica')">Gráfica</div>
     <div class="tab" onclick="tab(this,'elec')">Electrod.</div>
     <div class="tab" onclick="tab(this,'bat')">Batería</div>
+  </div>
+
+  <!-- SIMPLE PANEL -->
+  <div id="tc_simple" class="tc">
+    <div style="padding:12px 10px;overflow-y:auto">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+        <div><div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:5px"><span data-i18n="sm_loc">UBICACIÓN</span></div>
+          <div style="display:flex;gap:4px">
+            <button id="sloc-rio" onclick="setSimpleLoc('rio')" style="flex:1;padding:7px 2px;border-radius:4px;border:1px solid var(--teal);background:rgba(0,200,240,.15);color:var(--teal);font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer">🌊 RÍO</button>
+            <button id="sloc-mar" onclick="setSimpleLoc('mar')" style="flex:1;padding:7px 2px;border-radius:4px;border:1px solid var(--brd);background:transparent;color:var(--muted);font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer">🌊 MAR</button>
+          </div>
+        </div>
+        <div><div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:5px"><span data-i18n="sm_scale">ESCALA</span></div>
+          <div style="display:flex;gap:4px">
+            <button id="ssize-s" onclick="setSimpleSize('s')" title="1 módulo individual" style="flex:1;padding:7px 2px;border-radius:4px;border:1px solid var(--amber);background:rgba(240,168,0,.15);color:var(--amber);font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer">×1</button>
+            <button id="ssize-m" onclick="setSimpleSize('m')" title="10 módulos" style="flex:1;padding:7px 2px;border-radius:4px;border:1px solid var(--brd);background:transparent;color:var(--muted);font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer">×10</button>
+            <button id="ssize-l" onclick="setSimpleSize('l')" title="100 módulos" style="flex:1;padding:7px 2px;border-radius:4px;border:1px solid var(--brd);background:transparent;color:var(--muted);font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer">×100</button>
+          </div>
+        </div>
+      </div>
+      <div id="sr-size-info" style="font-size:9.5px;color:var(--teal);background:var(--bg2);border:1px solid var(--brd);border-radius:4px;padding:5px 8px;margin-bottom:10px;line-height:1.5">—</div>
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:9.5px;color:var(--muted);margin-bottom:3px"><span><span data-i18n="sm_rep">RÉPLICAS (×escala)</span></span><span id="snmod-lbl" style="color:var(--teal);font-weight:700">1</span></div>
+        <input type="range" id="snmod" min="1" max="500" step="1" value="1" style="width:100%" oninput="document.getElementById('snmod-lbl').textContent=this.value;renderSimple()">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px">
+        <div style="background:var(--bg2);border:1px solid var(--green);border-radius:6px;padding:11px;text-align:center"><div id="sr-pot" style="font-size:20px;font-weight:700;color:var(--green);font-family:'Rajdhani',sans-serif">—</div><div style="font-size:9px;color:var(--muted);margin-top:1px"><span data-i18n="sm_pow">POTENCIA TOTAL</span></div></div>
+        <div style="background:var(--bg2);border:1px solid var(--amber);border-radius:6px;padding:11px;text-align:center"><div id="sr-coches" style="font-size:20px;font-weight:700;color:var(--amber);font-family:'Rajdhani',sans-serif">—</div><div style="font-size:9px;color:var(--muted);margin-top:1px"><span data-i18n="sm_ev">COCHES EV / DÍA</span></div></div>
+        <div style="background:var(--bg2);border:1px solid var(--teal);border-radius:6px;padding:11px;text-align:center"><div id="sr-hog" style="font-size:20px;font-weight:700;color:var(--teal);font-family:'Rajdhani',sans-serif">—</div><div style="font-size:9px;color:var(--muted);margin-top:1px"><span data-i18n="sm_homes">HOGARES</span></div></div>
+        <div style="background:var(--bg2);border:1px solid var(--brd);border-radius:6px;padding:11px;text-align:center"><div id="sr-kwha" style="font-size:20px;font-weight:700;color:#c8d8e8;font-family:'Rajdhani',sans-serif">—</div><div style="font-size:9px;color:var(--muted);margin-top:1px"><span data-i18n="sm_eyear">ENERGÍA / AÑO</span></div></div>
+      </div>
+      <div id="sr-equiv" style="background:var(--bg2);border:1px solid var(--brd);border-radius:5px;padding:9px 11px;font-size:11px;color:var(--muted);line-height:1.6"></div>
+      <div style="margin-top:7px;font-size:9px;color:var(--muted);text-align:center"><span data-i18n="sm_hint">Parámetros físicos: ajusta en ⚙ TÉCNICO</span></div>
+    </div>
+  </div>
+
+  <!-- INVERSOR PANEL -->
+  <div id="tc_inversor" class="tc">
+    <div style="padding:12px 10px;overflow-y:auto">
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-size:9.5px;color:var(--muted);margin-bottom:3px"><span><span data-i18n="inv_nmod">MÓDULOS EN PLANTA</span></span><span id="inmod-lbl" style="color:var(--teal);font-weight:700">1</span></div>
+        <input type="range" id="inmod" min="1" max="1000" step="1" value="1" style="width:100%" oninput="document.getElementById('inmod-lbl').textContent=this.value;renderInversor()">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
+        <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px"><span data-i18n="inv_capex_lbl">CAPEX €/kW</span></div><input type="number" id="icapex" value="800" min="100" max="5000" step="50" oninput="renderInversor()" style="width:100%;background:var(--bg2);border:1px solid var(--brd);color:#c8d8e8;font-family:var(--mono);font-size:12px;padding:4px 7px;border-radius:4px"></div>
+        <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px"><span data-i18n="inv_precio_lbl">Precio €/kWh</span></div><input type="number" id="iprecio" value="0.12" min="0.05" max="0.50" step="0.01" oninput="renderInversor()" style="width:100%;background:var(--bg2);border:1px solid var(--brd);color:#c8d8e8;font-family:var(--mono);font-size:12px;padding:4px 7px;border-radius:4px"></div>
+        <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px"><span data-i18n="inv_opex_lbl">OPEX €/kW·año</span></div><input type="number" id="iopex" value="20" min="0" max="200" step="5" oninput="renderInversor()" style="width:100%;background:var(--bg2);border:1px solid var(--brd);color:#c8d8e8;font-family:var(--mono);font-size:12px;padding:4px 7px;border-radius:4px"></div>
+        <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px"><span data-i18n="inv_vida_lbl">Vida útil (años)</span></div><input type="number" id="ivida" value="25" min="5" max="50" step="1" oninput="renderInversor()" style="width:100%;background:var(--bg2);border:1px solid var(--brd);color:#c8d8e8;font-family:var(--mono);font-size:12px;padding:4px 7px;border-radius:4px"></div>
+      </div>
+      <!-- FABRICATION COST BLOCK -->
+      <div style="background:var(--bg2);border:1px solid var(--brd);border-radius:5px;padding:10px 12px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;cursor:pointer" onclick="toggleFabDetail()">
+          <span style="font-size:9px;color:var(--muted);letter-spacing:.8px"><span data-i18n="fab_title">COSTE DE FABRICACIÓN</span></span>
+          <span id="fab-toggle" style="font-size:9px;color:var(--teal)">▼ desglose</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px">
+          <div style="text-align:center">
+            <div id="fab-unit" style="font-size:16px;font-weight:700;color:var(--amber);font-family:'Rajdhani',sans-serif">—</div>
+            <div style="font-size:9px;color:var(--muted)"><span data-i18n="fab_unit_lbl">COSTE / UNIDAD</span></div>
+          </div>
+          <div style="text-align:center">
+            <div id="fab-total" style="font-size:16px;font-weight:700;color:var(--green);font-family:'Rajdhani',sans-serif">—</div>
+            <div style="font-size:9px;color:var(--muted)"><span data-i18n="fab_total_pre">TOTAL (×</span><span id="fab-nmod">1</span><span data-i18n="fab_total_suf"> ud.)</span></div>
+          </div>
+          <div style="text-align:center">
+            <div id="fab-eurw" style="font-size:16px;font-weight:700;color:var(--teal);font-family:'Rajdhani',sans-serif">—</div>
+            <div style="font-size:9px;color:var(--muted)"><span data-i18n="fab_eurw_lbl">€ / W instalado</span></div>
+          </div>
+        </div>
+        <div id="fab-detail" style="display:none;border-top:1px solid var(--brd);padding-top:8px">
+          <div id="fab-rows"></div>
+          <div style="font-size:9px;color:var(--muted);margin-top:6px;line-height:1.5">Precios orientativos de mercado (PVC, materiales estándar). El generador lineal es el componente de mayor variación según fabricación DIY o industrial.</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px">
+        <div style="background:var(--bg2);border:1px solid var(--green);border-radius:5px;padding:9px;text-align:center"><div id="ir-ingresos" style="font-size:17px;font-weight:700;color:var(--green);font-family:'Rajdhani',sans-serif">—</div><div style="font-size:9px;color:var(--muted)"><span data-i18n="inv_ing">INGRESOS/AÑO</span></div></div>
+        <div style="background:var(--bg2);border:1px solid var(--amber);border-radius:5px;padding:9px;text-align:center"><div id="ir-capex" style="font-size:17px;font-weight:700;color:var(--amber);font-family:'Rajdhani',sans-serif">—</div><div style="font-size:9px;color:var(--muted)"><span data-i18n="inv_cap">CAPEX TOTAL</span></div></div>
+        <div style="background:var(--bg2);border:1px solid var(--teal);border-radius:5px;padding:9px;text-align:center"><div id="ir-payback" style="font-size:17px;font-weight:700;color:var(--teal);font-family:'Rajdhani',sans-serif">—</div><div style="font-size:9px;color:var(--muted)"><span data-i18n="inv_pb">PAYBACK</span></div></div>
+        <div style="background:var(--bg2);border:1px solid var(--brd);border-radius:5px;padding:9px;text-align:center"><div id="ir-lcoe" style="font-size:17px;font-weight:700;color:#c8d8e8;font-family:'Rajdhani',sans-serif">—</div><div style="font-size:9px;color:var(--muted)"><span data-i18n="inv_lcoe_lbl">LCOE €/kWh</span></div></div>
+        <div style="background:var(--bg2);border:1px solid var(--brd);border-radius:5px;padding:9px;text-align:center"><div id="ir-van" style="font-size:17px;font-weight:700;color:#c8d8e8;font-family:'Rajdhani',sans-serif">—</div><div style="font-size:9px;color:var(--muted)"><span data-i18n="inv_van_lbl">VAN 25a (5%)</span></div></div>
+        <div style="background:var(--bg2);border:1px solid var(--brd);border-radius:5px;padding:9px;text-align:center"><div id="ir-tir" style="font-size:17px;font-weight:700;color:#c8d8e8;font-family:'Rajdhani',sans-serif">—</div><div style="font-size:9px;color:var(--muted)"><span data-i18n="inv_tir_lbl">TIR estimada</span></div></div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--brd);border-radius:5px;padding:9px 11px">
+        <div style="font-size:9px;color:var(--muted);letter-spacing:.8px;margin-bottom:6px"><span data-i18n="inv_lcoe_cmp">LCOE VS OTRAS TECNOLOGÍAS</span></div>
+        <div id="ir-lcoe-bar"></div>
+      </div>
+      <div id="ir-scale-warn" style="display:none;margin-top:8px;background:rgba(240,168,0,.08);border-left:2px solid var(--amber);padding:7px 10px;font-size:10px;color:var(--amber);line-height:1.5;border-radius:0 4px 4px 0"></div>
+      <div style="margin-top:7px;font-size:9px;color:var(--muted);text-align:center"><span data-i18n="inv_capex_note">CAPEX = inversión inicial estimada · no incluye obra civil ni conexión a red</span></div>
+    </div>
   </div>
 
   <!-- TAB BALANCE -->
@@ -200,6 +323,7 @@ canvas.chart{width:100%!important;display:block}
       <div class="rr"><span class="rk">E C1 neta (gravedad)</span><span class="rv a" id="rEC1">—</span></div>
       <div class="rr"><span class="rk">E C2 neta (Arquímedes)</span><span class="rv g" id="rEC2">—</span></div>
       <div class="rr"><span class="rk">E sistema T (evacuación)</span><span class="rv t">0 J — estanque paga</span></div>
+      <div class="rr" style="opacity:.65"><span class="rk" style="font-size:9px" data-i18n="rk_asym_note">Ciclo asimétrico: bajada en seco</span><span class="rv t" id="rasym">—</span></div>
       <div class="rr"><span class="rk">E total neta/ciclo</span><span class="rv g" id="rET">—</span></div>
       <div class="rr"><span class="rk">Factor H_rec / h_cil</span><span class="rv a" id="rfT">—</span></div>
     </div>
@@ -231,14 +355,29 @@ canvas.chart{width:100%!important;display:block}
       <div class="rr"><span class="rk">Caudal evacuación</span><span class="rv" id="tQ">—</span></div>
       <div class="rr"><span class="rk">DN conducto calculado</span><span class="rv t" id="tDc">—</span></div>
       <div class="rr"><span class="rk">Longitud conducto</span><span class="rv" id="tLc">—</span></div>
-      <div class="rr"><span class="rk">Velocidad flujo diseño</span><span class="rv">1.5 m/s</span></div>
+      <div class="rr"><span class="rk" data-i18n="rk_tvd">Velocidad flujo diseño</span><span class="rv">1.5 m/s</span></div>
+      <div class="rr"><span class="rk" data-i18n="rk_tQls">Caudal total (×2 cond.)</span><span class="rv t" id="tQls">—</span></div>
+      <div class="rr"><span class="rk" data-i18n="rk_tQlm">Caudal en L/min</span><span class="rv" id="tQlm">—</span></div>
+      <div class="rr"><span class="rk" data-i18n="rk_tev_t">Tiempo vaciado T completo</span><span class="rv" id="tEvT">—</span></div>
     </div>
     <div class="rs">
       <div class="rt" data-i18n="rt_tpres">Presión y válvulas</div>
       <div class="rr"><span class="rk">Presión fondo estanque</span><span class="rv" id="tPf">—</span></div>
+      <div class="rr"><span class="rk" data-i18n="rk_tPcond">Contrapresión conductos desagüe</span><span class="rv" id="tPcond">—</span></div>
+      <div class="rr"><span class="rk" data-i18n="rk_tPdiff">Diferencia de presión</span><span class="rv t" id="tPdiff">—</span></div>
+      <div class="rr"><span class="rk" data-i18n="rk_tPexpl">Presión neta disponible</span><span class="rv g" id="tPexpl">—</span></div>
       <div class="rr"><span class="rk">Clase válvulas</span><span class="rv a" id="tPN">—</span></div>
       <div class="rr"><span class="rk">Émbolo</span><span class="rv">HDPE + O-ring PTFE</span></div>
       <div class="rr"><span class="rk">OPEX evacuación</span><span class="rv g">0 € — estanque paga</span></div>
+    </div>
+    <div class="rs">
+      <div class="rt" data-i18n="rt_tall_cond">Dimensiones de todos los conductos</div>
+      <div class="rr"><span class="rk" data-i18n="rk_tc_desague">Conductos desagüe (×2)</span><span class="rv t" id="tCd">—</span></div>
+      <div class="rr"><span class="rk" data-i18n="rk_tc_aire">Conductos aire (×2)</span><span class="rv" id="tCa">—</span></div>
+      <div class="rr"><span class="rk" data-i18n="rk_tc_entrada">Entrada agua columna (×2)</span><span class="rv t" id="tCe">—</span></div>
+      <div class="rr"><span class="rk" data-i18n="rk_tc_emb">Tubo telescópico émbolo (×2)</span><span class="rv" id="tCemb">—</span></div>
+      <div class="rr"><span class="rk" data-i18n="rk_tc_vcheck">Válvulas check (×6 total)</span><span class="rv" id="tCvck">—</span></div>
+      <div class="rr"><span class="rk" data-i18n="rk_tc_vel_emb">Velocidad en émbolo</span><span class="rv t" id="tVemb">—</span></div>
     </div>
     <div class="rs">
       <div class="rt" data-i18n="rt_test">Estanque (1 módulo)</div>
@@ -266,6 +405,8 @@ canvas.chart{width:100%!important;display:block}
       <div class="rr"><span class="rk">Fuerza máxima diseño</span><span class="rv a" id="gF">—</span></div>
       <div class="rr"><span class="rk">Nº polos estátor</span><span class="rv" id="gpol">—</span></div>
       <div class="rr"><span class="rk">Paso polar</span><span class="rv">100 mm</span></div>
+      <div class="rr"><span class="rk" data-i18n="rk_ppeak">Potencia pico</span><span class="rv a" id="gPpeak">—</span></div>
+      <div class="rr"><span class="rk" data-i18n="rk_vasym">Vel. nom. diseño</span><span class="rv" id="gVnom">—</span></div>
     </div>
     <div class="rs">
       <div class="rt" data-i18n="rt_gmat">Materiales</div>
@@ -276,10 +417,10 @@ canvas.chart{width:100%!important;display:block}
     </div>
     <div class="rs">
       <div class="rt" data-i18n="rt_gpow">Electrónica de potencia</div>
-      <div class="rr"><span class="rk">Rectificador</span><span class="rv">Puente IGBT 6 pulsos</span></div>
-      <div class="rr"><span class="rk">Regulador</span><span class="rv">MPPT activo</span></div>
+      <div class="rr"><span class="rk">Rectificador</span><span class="rv" id="gRec">Puente IGBT 6 pulsos</span></div>
+      <div class="rr"><span class="rk">Regulador</span><span class="rv" id="gReg">MPPT activo</span></div>
       <div class="rr"><span class="rk">Inversor</span><span class="rv" id="gInv">—</span></div>
-      <div class="rr"><span class="rk">Batería buffer</span><span class="rv">LiFePO4 2–5 kWh BMS</span></div>
+      <div class="rr"><span class="rk">Batería buffer</span><span class="rv" id="gBat">LiFePO4 2–5 kWh BMS</span></div>
     </div>
   </div>
 
@@ -334,19 +475,36 @@ const MC1=280,MC2=180;
 const DNS=[25,32,40,50,63,75,90,110,125,140,160,200,225,250,280,315,355,400,450,500];
 function nearDN(mm){return DNS.find(d=>d>=mm)||DNS[DNS.length-1]}
 
-function calc(r,h,H,hol,eta){
+function calc(r,h,H,hol,eta,kT=1.0){
   const d=2*r,Vc=Math.PI*r*r*h;
   const rc=r+hol,dc=2*rc;
   const mw=RHO*Vc,mc1=MC1*Vc,mc2=MC2*Vc;
   const MC1t=mw+mc1,FA=RHO*G*Vc,Fn=FA-mc2*G;
   if(Fn<=0)return null;
-  const EC1=MC1t*G*H*eta,EC2=Fn*G? Fn*H*eta:0; // Fn already in N
-  // correction: E=F*d, Fn in N, H in m => J
-  const ec1=MC1t*G*H*eta, ec2=Fn*H*eta, eT=ec1+ec2;
-  const tc=3600/CYH,kh=(eT*CYH)/3.6e6,PW=kh*1000;
-  const vcil=H/(tc/2);
+
+  // ── ASYMMETRIC CYCLE (dry descent) ───────────────────────────
+  // C1 descends DRY: no Archimedes opposition → full weight drives down
+  // Water column falls to T first, then cylinder falls in air
+  // Piston only acts AFTER cylinder has dumped its water into T (during C2)
+  const ec1 = MC1t*G*H*eta;          // C1 dry: F = MC1·g (no FA subtracted)
+  const ec2 = Fn*H*eta;              // C2 submerged: F = FA − mc2·g (unchanged)
+  const eT  = ec1+ec2;
+
+  // Asymmetric timing: each phase duration proportional to 1/force
+  // t1/t2 = F2/F1  (same impulse = F·t for equal mass displacement)
+  // t1+t2 = tc_total  →  tc = 3600/CYH (total cycle period fixed by CYH)
+  const tc=3600/CYH;
+  // Instantaneous average velocities for each phase
+  const f1=MC1t*G, f2=Fn;            // driving forces [N]
+  const fsum=f1+f2;
+  const t1=tc*(f2/fsum);             // faster phase gets less time (higher force)
+  const t2=tc*(f1/fsum);
+  const vcil1=H/t1;                  // descent velocity (faster)
+  const vcil2=H/t2;                  // ascent velocity (slower)
+  const vcil=(vcil1+vcil2)/2;        // mean velocity for generator sizing
+  const kh=(eT*CYH)/3.6e6,PW=kh*1000;
   const Van=Math.PI*(rc*rc-r*r)*h,VT=Vc+Van;
-  const hT=h*1.2,rT=Math.sqrt(VT/(Math.PI*hT*2)),dT=2*rT,LT=dc+2*(dT+0.05);
+  const hT=h*1.2*kT,rT=Math.sqrt(VT/(Math.PI*hT*2)),dT=2*rT,LT=dc+2*(dT+0.05);
   const Qev=2*Vc/tc,dcmm=2*Math.sqrt(Qev/1.5/Math.PI)*1000;
   const Pf=RHO*G*(H+0.2)/1e5,PN=Math.max(10,Math.ceil(Pf/10)*10);
   // Estanque en planta con T DEBAJO de la columna:
@@ -357,8 +515,8 @@ function calc(r,h,H,hol,eta){
   const sep=3*dc,Fmax=Math.max(MC1t*G,Fn);  // sep kept for legacy
   const npol=Math.max(8,Math.floor(H/0.10));
   const Vs=PW<2000?230:400,In=PW/Vs;
-  return{r,d,h,H,hol,eta,Vc,rc,dc,mw,mc1,mc2,MC1:MC1t,FA,Fn,
-    ec1,ec2,eT,kh,PW,kd:kh*24,ka:kh*8760,hog:kh*8760/HOGAR,tc,vcil,
+  return{r,d,h,H,hol,eta,Vc,rc,dc,mw,mc1,mc2,MC1:MC1t,FA,Fn,Lc:H+0.20,
+    ec1,ec2,eT,kh,PW,kd:kh*24,ka:kh*8760,hog:kh*8760/HOGAR,tc,t1,t2,vcil,vcil1,vcil2,
     VT,hT,rT,dT,LT,Qev,dcmm,dn_c:nearDN(dcmm),dn_T:nearDN(dT*1000),
     Pf,PN,sep,est_largo,est_ancho,Fmax,npol,Vs,In,
     fs:kh*8760/595};
@@ -411,7 +569,11 @@ function slSet(id,v){
   const pct=((v-+el.min)/(+el.max-+el.min)*100).toFixed(1)+'%';
   el.style.setProperty('--p',pct);
 }
-function slLbl(lid,v,dec){document.getElementById(lid).textContent=v.toFixed(dec)}
+function slLbl(lid,v,dec){
+  const el=document.getElementById(lid);
+  if(!el)return;
+  el.textContent=typeof v==='string'?v:v.toFixed(dec);
+}
 
 function preset(n){
   const P={A:{r:.4,h:.8,H:2.35,hol:10,eta:.74},B:{r:.5,h:1,H:2.35,hol:10,eta:.74},proto:{r:.07,h:.15,H:.8,hol:1.5,eta:.6}};
@@ -421,6 +583,7 @@ function preset(n){
   slSet('sH',p.H);slLbl('lH',p.H,2);
   slSet('shol',p.hol);slLbl('lhol',p.hol,0);
   slSet('seta',p.eta);slLbl('leta',p.eta,2);
+  slSet('skT',1.0);slLbl('lkT','×1.00');
   upd();
 }
 
@@ -433,7 +596,8 @@ function upd(){
     const pct=((+el.value-+el.min)/(+el.max-+el.min)*100).toFixed(1)+'%';
     el.style.setProperty('--p',pct);
   });
-  M=calc(r,h,H,hol,eta);
+  const kT=slVal('skT');
+  M=calc(r,h,H,hol,eta,kT);
   render();
   if(document.getElementById('tc_grafica').classList.contains('on')) drawCharts();
 }
@@ -454,9 +618,10 @@ function render(){
   set('rkwhd',f2(M.kd,2)+(currentLang==='en'?' kWh/day':' kWh/día'));
   set('rkwha',fN(M.ka,0)+(currentLang==='en'?' kWh/year':' kWh/año'));
   set('rsol','×'+fN(M.fs,0));
-  set('rEC1',f2(M.ec1,1)+' J ('+f2(M.ec1/1000,3)+' kJ)');
-  set('rEC2',f2(M.ec2,1)+' J ('+f2(M.ec2/1000,3)+' kJ)');
+  set('rEC1',f2(M.ec1,1)+' J ('+f2(M.ec1/1000,3)+' kJ) — '+f2(M.t1,1)+'s');
+  set('rEC2',f2(M.ec2,1)+' J ('+f2(M.ec2/1000,3)+' kJ) — '+f2(M.t2,1)+'s');
   set('rET',f2(M.eT,1)+' J ('+f2(M.eT/1000,3)+' kJ)');
+  set('rasym','t↓='+f2(M.t1,1)+'s · t↑='+f2(M.t2,1)+'s · ratio='+f2(M.t2/M.t1,2)+'×');
   set('rfT','×'+f2(M.H/M.h,2)+' (H_rec/h_cil)');
   set('rdc',Math.round(M.d*1000)+' mm');
   set('rhc',Math.round(M.h*1000)+' mm');
@@ -470,11 +635,64 @@ function render(){
   set('tdT',Math.round(M.dT*1000)+' mm → DN'+M.dn_T);
   set('thT',f2(M.hT*100,1)+' cm');
   set('tLT',f2(M.LT*100,1)+' cm');
+  // kT info panel
+  const kT_v = slVal('skT');
+  const kT_el = document.getElementById('kT-dims');
+  if(kT_el){
+    const hT_base = M.h*1.2;  // kT=1 value
+    const rT_base = Math.sqrt(M.VT/(Math.PI*hT_base*2));
+    const dT_base = 2*rT_base;
+    const arrow_h = kT_v>1?'▲':'▼', arrow_d = kT_v>1?'▼':'▲';
+    kT_el.innerHTML =
+      '<span style="color:var(--amber)">Alto hT</span><span style="color:var(--amber)">' + f2(M.hT*100,1) + ' cm ' + (kT_v!==1?arrow_h+' (base:'+f2(hT_base*100,1)+'cm)':'') + '</span>' +
+      '<span style="color:var(--teal)">Ø dT</span><span style="color:var(--teal)">' + Math.round(M.dT*1000) + ' mm ' + (kT_v!==1?arrow_d+' (base:'+Math.round(dT_base*1000)+'mm)':'') + '</span>' +
+      '<span style="color:var(--muted)">LT</span><span style="color:var(--muted)">' + f2(M.LT*100,1) + ' cm</span>' +
+      '<span style="color:var(--muted)">DN</span><span style="color:var(--muted)">DN' + M.dn_T + '</span>';
+  }
   set('tQ',f2(M.Qev*1000,2)+' L/s = '+f2(M.Qev*60000,1)+' L/min');
   set('tDc',f2(M.dcmm,1)+' mm → DN'+M.dn_c);
   set('tLc',f2((M.H+0.2)*100,0)+' cm');
-  set('tPf',f2(M.Pf,4)+' bar');
+  set('tPf',f2(M.Pf,4)+' bar → PN'+M.PN);
   set('tPN','PN '+M.PN);
+
+  // ── PRESSURE ANALYSIS ──────────────────────────────────────────
+  const v_cond = 1.5;                                   // m/s design flow velocity
+  const L_cond = (M.H||0.8) + 0.20;                    // conduit length [m]
+  const D_cond = (M.dn_c||50)/1000;                    // conduit diameter [m]
+  const f_darcy = 0.02;
+  const dP_friction_Pa = f_darcy*(L_cond/D_cond)*(RHO*v_cond*v_cond/2);
+  const dP_exit_Pa = 0.5*RHO*v_cond*v_cond;
+  const P_cond_Pa = dP_friction_Pa + dP_exit_Pa;
+  const P_fondo_Pa = RHO*G*(M.H||0.8);
+  const P_net_Pa  = P_fondo_Pa - P_cond_Pa;
+  const pct_loss  = (P_cond_Pa/P_fondo_Pa*100).toFixed(1);
+  const h_equiv   = (P_net_Pa/(RHO*G)).toFixed(2);
+
+  // Flow rate (2 drain conduits, each DN=dn_c)
+  const A_cond = Math.PI*(D_cond/2)*(D_cond/2);
+  const Q_Ls    = (v_cond*A_cond*2*1000).toFixed(3);
+  const Q_Lm    = (v_cond*A_cond*2*60000).toFixed(1);
+  const t_evac  = ((M.VT||0.05)/(v_cond*A_cond*2)).toFixed(1);
+
+  const pEn = currentLang==='en';
+  if(document.getElementById('tQls'))  set('tQls', Q_Ls+' L/s');
+  if(document.getElementById('tQlm'))  set('tQlm', Q_Lm+' L/min');
+  if(document.getElementById('tEvT'))  set('tEvT', t_evac+' s '+(pEn?'(must be < t2 = ':'(debe ser < t2 = ')+f2(M.t2,1)+'s)');
+  if(document.getElementById('tPcond')) set('tPcond', f2(P_cond_Pa/1e5,5)+' bar'+(pEn?' (friction + exit losses)':' (rozamiento + salida)'));
+  if(document.getElementById('tPdiff')) set('tPdiff', f2(P_net_Pa/1e5,5)+' bar = '+f2(P_net_Pa,1)+' Pa'+(pEn?' (net driving)':' (presión motriz neta)'));
+  if(document.getElementById('tPexpl')) set('tPexpl', (pEn?'Net head ':'Altura neta ')+h_equiv+' m — '+(pEn?'losses ':'pérdidas ')+pct_loss+'%');
+
+  // ── ALL CONDUIT DIMENSIONS ──────────────────────────────────────
+  const dn_c  = M.dn_c||50;
+  const dc_mm = Math.round((M.dc||0.17)*1000);
+  const A_emb = Math.PI*(dn_c/1000/2)*(dn_c/1000/2);
+  const v_emb = ((v_cond*A_cond)/(A_emb)).toFixed(2);
+  if(document.getElementById('tCd'))   set('tCd',  'DN'+dn_c+' · L='+Math.round(L_cond*100)+'cm (×2)'+(pEn?' drain + check ↑':' desagüe + check ↑'));
+  if(document.getElementById('tCa'))   set('tCa',  'DN'+dn_c+' · L='+Math.round((M.H||0.8)*100+25)+'cm (×2)'+(pEn?' air inlet + check ↓':' entrada aire + check ↓'));
+  if(document.getElementById('tCe'))   set('tCe',  'DN'+dn_c+' · L≈'+Math.round(dc_mm*0.6)+'mm horiz. (×2)'+(pEn?' fill from tank + check →':' llenado estanque + check →'));
+  if(document.getElementById('tCemb')) set('tCemb','DN'+dn_c+' · L='+f2((M.LT||0.5)/2*100,1)+'cm (×2)'+(pEn?' telescopic piston':' tubo telescópico émbolo'));
+  if(document.getElementById('tCvck')) set('tCvck','DN'+dn_c+(pEn?' PVC · 2× drain(↑) + 2× air(↓) + 2× fill(→)':' PVC · 2× desagüe(↑) + 2× aire(↓) + 2× llenado(→)'));
+  if(document.getElementById('tVemb')) set('tVemb', v_emb+' m/s'+(pEn?' in piston tube · DN':' en émbolo · DN')+dn_c);
   set('tSep',f2(M.sep,2)+' m (3 × d_col)');
   set('tEst',f2(M.est_largo,2)+'m ('+(currentLang==='en'?'length':'largo')+') × '+f2(M.est_ancho,2)+'m ('+(currentLang==='en'?'width':'ancho')+') × 2.5m');
   set('tVest',f2(M.est_largo*M.est_ancho*2.5,1)+' m³ = '+fN(M.est_largo*M.est_ancho*2500,0)+' L');
@@ -483,11 +701,29 @@ function render(){
   set('gPn',Pnom+' W ('+(currentLang==='en'?'margin':'margen')+' '+f2((Pnom/M.PW-1)*100,1)+'%)');
   set('gV',M.Vs+' V '+(M.Vs===230?(currentLang==='en'?'single-phase':'monofásico'):(currentLang==='en'?'three-phase':'trifásico')));
   set('gI',f2(M.In,2)+' A');
-  set('gv',f2(M.vcil*1000,1)+' mm/s');
-  set('gvp',f2(M.vcil*1.5*1000,1)+' mm/s');
+  set('gv',f2(M.vcil1*1000,1)+' ↓ / '+f2(M.vcil2*1000,1)+' ↑ mm/s');
+  set('gvp',f2(M.vcil1*1500,1)+' ↓ / '+f2(M.vcil2*1500,1)+' ↑ mm/s');
   set('gF',f2(M.Fmax,1)+' N = '+f2(M.Fmax/1000,3)+' kN');
   set('gpol',M.npol+(currentLang==='en'?' poles':' polos'));
-  set('gInv',Pnom+(currentLang==='en'?' W single-phase 230V 50Hz':' W monofásico 230V 50Hz'));
+  const Ppeak = Math.ceil(M.MC1*9.81*M.vcil1*M.eta/50)*50;
+  const Pinv  = Math.ceil(Ppeak/100)*100;
+  const vRat  = (M.vcil1/M.vcil2).toFixed(2);
+  const bufWh = ((Ppeak-M.PW)*M.t1/3600).toFixed(3);
+  set('gInv', Pinv+(currentLang==='en'
+    ?' W single-phase 230V 50Hz (peak — avg '+Pnom+' W)'
+    :' W monofásico 230V 50Hz (pico — media '+Pnom+' W)'));
+  set('gRec', currentLang==='en'
+    ?'6-pulse IGBT bridge · '+f2(M.vcil1*1000,0)+' ↓ / '+f2(M.vcil2*1000,0)+' ↑ mm/s'
+    :'Puente IGBT 6 pulsos · '+f2(M.vcil1*1000,0)+' ↓ / '+f2(M.vcil2*1000,0)+' ↑ mm/s');
+  set('gReg', currentLang==='en'
+    ?'Active MPPT · V ratio '+vRat+'× (descent/ascent)'
+    :'MPPT activo · ratio V '+vRat+'× (bajada/subida)');
+  set('gBat', currentLang==='en'
+    ?'LiFePO4 2–5 kWh BMS · buffer '+bufWh+' Wh/cycle'
+    :'LiFePO4 2–5 kWh BMS · buffer '+bufWh+' Wh/ciclo');
+  set('gPpeak', Ppeak+' W ('+Math.round(Ppeak/M.PW*100-100)+'% '+(currentLang==='en'?'above mean':'sobre media')+')');
+  set('gVnom', f2(M.vcil2*1000,1)+' mm/s '+(currentLang==='en'?'ascent (design nominal)':'subida (nominal diseño)')
+    +' / '+f2(M.vcil1*1000,1)+' mm/s '+(currentLang==='en'?'descent':'bajada'));
   // Electrod.
   const P=M.PW;
   set('ewh',f2(P,3)+' Wh/h');
@@ -520,6 +756,12 @@ function render(){
     const nm_buso = (currentLang==='en' && e.en) ? e.en : e.n;
     return `<div class="rr"><span class="rk">${nm_buso} (${e.p}W)</span><span class="rv t">${ts}</span></div>`;
   }).join(''):'<div class="rr" style="color:var(--muted)">—</div>';
+  // Extra mode renders
+  renderFarmScale();
+  if(typeof currentMode!=='undefined'){
+    if(currentMode==='simple')   renderSimple();
+    if(currentMode==='inversor') renderInversor();
+  }
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -544,9 +786,11 @@ function ch1_power(){
   const ctx=bg(cv),W=cv.width,H=170,px=32,py=10;
   cv.height=H;
   grid(ctx,W,H,px,py);
-  const PC1=M.MC1*G*M.vcil*M.eta, PC2=M.Fn*M.vcil*M.eta;
+  const PC1=M.MC1*G*M.vcil1*M.eta, PC2=M.Fn*M.vcil2*M.eta;
   const Pm=Math.max(PC1,PC2)*1.1||1;
-  const sx=t=>px+(t/30)*(W-px-8), sy=p=>py+(1-p/Pm)*(H-py-16);
+  // Asymmetric: t1 for descent (faster), t2 for ascent
+  const tc=M.tc, t1=M.t1, t2=M.t2;
+  const sx=t=>px+(t/tc)*(W-px-8), sy=p=>py+(1-p/Pm)*(H-py-16);
   const ease=p=>p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
   // C1 area+line
   ctx.beginPath();ctx.fillStyle='rgba(240,168,0,.10)';
@@ -1745,6 +1989,64 @@ const i18n = {
     hud_E: 'E acum.',
     hud_P: 'P inst.',
     hud_cyc: 'ciclo',
+    rk_asym_note: 'Ciclo asimétrico: bajada en seco',
+    rk_ppeak: 'Potencia pico',
+    rk_vasym: 'Vel. nom. diseño',
+    mbtn_simple:'⬡ SIMPLE', mbtn_tecnico:'⚙ TÉCNICO', mbtn_inv:'€ INVERSOR',
+    sm_loc:'UBICACIÓN', sm_scale:'ESCALA', sm_rep:'RÉPLICAS (×escala)',
+    sm_pow:'POTENCIA TOTAL', sm_ev:'COCHES EV / DÍA', sm_homes:'HOGARES',
+    sm_eyear:'ENERGÍA / AÑO', sm_hint:'Parámetros físicos: ajusta en ⚙ TÉCNICO',
+    sm_loc_rio:'🌊 RÍO', sm_loc_mar:'🌊 MAR',
+    sm_size_1:'×1', sm_size_10:'×10', sm_size_100:'×100',
+    inv_nmod:'MÓDULOS EN PLANTA', inv_capex_lbl:'CAPEX €/kW',
+    inv_precio_lbl:'Precio €/kWh', inv_opex_lbl:'OPEX €/kW·año',
+    inv_vida_lbl:'Vida útil (años)', inv_ing:'INGRESOS/AÑO',
+    inv_cap:'CAPEX TOTAL', inv_pb:'PAYBACK', inv_lcoe_lbl:'LCOE €/kWh',
+    inv_van_lbl:'VAN 25a (5%)', inv_tir_lbl:'TIR estimada',
+    inv_lcoe_cmp:'LCOE VS OTRAS TECNOLOGÍAS',
+    inv_note:'Orientativo · no incluye obra civil ni conexión a red',
+    inv_capex_note:'CAPEX = inversión inicial estimada · no incluye obra civil ni conexión a red',
+    inv_warn_pre:'⚠ Potencia total: ',
+    inv_warn_mid:' — los ratios €/kW son orientativos a esta escala. CAPEX real: coste de materiales + fabricación, no el ratio industrial.',
+    fab_title:'COSTE DE FABRICACIÓN', fab_unit_lbl:'COSTE / UNIDAD',
+    fab_total_pre:'TOTAL (×', fab_total_suf:' ud.)',
+    fab_eurw_lbl:'€ / W instalado', fab_detail_open:'▼ desglose',
+    fab_detail_close:'▲ ocultar', fab_total_row:'TOTAL / UNIDAD',
+    fab_note:'Precios orientativos de mercado (PVC, materiales estándar). El generador lineal es el componente de mayor variación según fabricación DIY o industrial.',
+    fab_r_cil:'Cilindro PVC', fab_n_cil:'tubo + tapas + junta',
+    fab_r_col:'Columna guía PVC', fab_n_col:'tubo + bridas',
+    fab_r_T:'Sistema T', fab_n_T:'barra + codos + émbolo',
+    fab_r_cond:'Conductos', fab_n_cond:'desagüe + aire',
+    fab_r_valv:'Válvulas check', fab_n_valv:'agua + aire + llenado',
+    fab_r_est:'Estanque', fab_n_est:'polipropileno / fibra vidrio',
+    fab_r_gen:'Generador TFPM', fab_n_gen_diy:'DIY / bobinado manual', fab_n_gen_ind:'industrial',
+    fab_r_elec:'Electrónica', fab_n_elec:'rect.+MPPT+inv.+batería',
+    fab_r_misc:'Accesorios y misc', fab_n_misc:'tornillería, sellante, cable',
+    farm_nmod:'Nº módulos',
+    sl_kT_lbl:'Alto ↕ / Ancho ↔',
+    cs_farm_title:'Escalado granja',
+    farm_pot:'Potencia', farm_eyr:'Energía/año',
+    farm_hog:'Hogares', farm_mod:'Módulos',
+    eq_gw:' GW continuos — comparable a varias centrales nucleares operando 24/7.',
+    eq_mw_hi:' MW continuos {loc} — comparable a un parque eólico offshore grande, sin intermitencia.',
+    eq_mw_md:' MW continuos {loc} — equivalente a un parque eólico pequeño o minicentral hidráulica.',
+    eq_mw_lo:' MW continuos {loc} — suficiente para una población mediana.',
+    eq_kw:' kW — instalación piloto o microgeneración local.',
+    eq_w:' W — prototipo de laboratorio o demostración.',
+    eq_rio:'en el lecho de un río', eq_mar:'en zona costera o marina',
+    rt_tall_cond:'Dimensiones de todos los conductos',
+    rk_tvd:'Velocidad flujo diseño',
+    rk_tQls:'Caudal total (×2 cond.)', rk_tQlm:'Caudal en L/min',
+    rk_tev_t:'Tiempo vaciado T completo',
+    rk_tPcond:'Contrapresión conductos desagüe',
+    rk_tPdiff:'Diferencia de presión',
+    rk_tPexpl:'Presión neta disponible',
+    rk_tc_desague:'Conductos desagüe (×2)',
+    rk_tc_aire:'Conductos aire (×2)',
+    rk_tc_entrada:'Entrada agua columna (×2)',
+    rk_tc_emb:'Tubo telescópico émbolo (×2)',
+    rk_tc_vcheck:'Válvulas check (×6 total)',
+    rk_tc_vel_emb:'Velocidad en émbolo',
   },
   en: {
     pat_badge: 'PATENT GRANTED',
@@ -1879,6 +2181,64 @@ const i18n = {
     hud_E: 'E accum.',
     hud_P: 'P inst.',
     hud_cyc: 'cycle',
+    rk_asym_note: 'Asymmetric cycle: dry descent',
+    rk_ppeak: 'Peak power',
+    rk_vasym: 'Design nom. velocity',
+    mbtn_simple:'⬡ SIMPLE', mbtn_tecnico:'⚙ TECHNICAL', mbtn_inv:'€ INVESTOR',
+    sm_loc:'LOCATION', sm_scale:'SCALE', sm_rep:'REPLICAS (×scale)',
+    sm_pow:'TOTAL POWER', sm_ev:'EV CARS / DAY', sm_homes:'HOUSEHOLDS',
+    sm_eyear:'ENERGY / YEAR', sm_hint:'Physical parameters: adjust in ⚙ TECHNICAL',
+    sm_loc_rio:'🌊 RIVER', sm_loc_mar:'🌊 SEA',
+    sm_size_1:'×1', sm_size_10:'×10', sm_size_100:'×100',
+    inv_nmod:'UNITS IN PLANT', inv_capex_lbl:'CAPEX €/kW',
+    inv_precio_lbl:'Energy price €/kWh', inv_opex_lbl:'OPEX €/kW·yr',
+    inv_vida_lbl:'Useful life (years)', inv_ing:'REVENUE/YEAR',
+    inv_cap:'TOTAL CAPEX', inv_pb:'PAYBACK', inv_lcoe_lbl:'LCOE €/kWh',
+    inv_van_lbl:'NPV 25y (5%)', inv_tir_lbl:'IRR estimate',
+    inv_lcoe_cmp:'LCOE VS OTHER TECHNOLOGIES',
+    inv_note:'Indicative · civil works and grid connection not included',
+    inv_capex_note:'CAPEX = estimated initial investment · civil works not included',
+    inv_warn_pre:'⚠ Total power: ',
+    inv_warn_mid:' — €/kW ratios are indicative at this scale. Actual prototype CAPEX: material + manufacturing cost, not the industrial ratio.',
+    fab_title:'MANUFACTURING COST', fab_unit_lbl:'COST / UNIT',
+    fab_total_pre:'TOTAL (×', fab_total_suf:' units)',
+    fab_eurw_lbl:'€ / W installed', fab_detail_open:'▼ breakdown',
+    fab_detail_close:'▲ hide', fab_total_row:'TOTAL / UNIT',
+    fab_note:'Indicative market prices (PVC, standard materials). The linear generator is the highest-variability component depending on DIY or industrial manufacture.',
+    fab_r_cil:'PVC cylinder', fab_n_cil:'tube + caps + gasket',
+    fab_r_col:'PVC guide column', fab_n_col:'tube + flanges',
+    fab_r_T:'T system', fab_n_T:'bar + elbows + piston',
+    fab_r_cond:'Conduits', fab_n_cond:'drain + air',
+    fab_r_valv:'Check valves', fab_n_valv:'water + air + fill',
+    fab_r_est:'Tank', fab_n_est:'polypropylene / fibreglass',
+    fab_r_gen:'TFPM generator', fab_n_gen_diy:'DIY / hand-wound', fab_n_gen_ind:'industrial',
+    fab_r_elec:'Electronics', fab_n_elec:'rect.+MPPT+inv.+battery',
+    fab_r_misc:'Accessories & misc', fab_n_misc:'hardware, sealant, cable',
+    farm_nmod:'No. of modules',
+    sl_kT_lbl:'Height ↕ / Width ↔',
+    cs_farm_title:'Farm scaling',
+    farm_pot:'Power', farm_eyr:'Energy/year',
+    farm_hog:'Households', farm_mod:'Modules',
+    eq_gw:' GW continuous — comparable to several nuclear plants operating 24/7.',
+    eq_mw_hi:' MW continuous {loc} — comparable to a large offshore wind farm, without intermittency.',
+    eq_mw_md:' MW continuous {loc} — equivalent to a small wind farm or run-of-river hydro plant.',
+    eq_mw_lo:' MW continuous {loc} — sufficient for a medium-sized town.',
+    eq_kw:' kW — pilot installation or local microgeneration.',
+    eq_w:' W — laboratory prototype or demonstration unit.',
+    eq_rio:'in a riverbed', eq_mar:'in a coastal or marine area',
+    rt_tall_cond:'All conduit dimensions',
+    rk_tvd:'Design flow velocity',
+    rk_tQls:'Total flow (×2 cond.)', rk_tQlm:'Flow rate in L/min',
+    rk_tev_t:'Full T drain time',
+    rk_tPcond:'Drain conduit back-pressure',
+    rk_tPdiff:'Pressure difference',
+    rk_tPexpl:'Net driving pressure',
+    rk_tc_desague:'Drain conduits (×2)',
+    rk_tc_aire:'Air inlet conduits (×2)',
+    rk_tc_entrada:'Column water fill conduits (×2)',
+    rk_tc_emb:'Piston telescopic tube (×2)',
+    rk_tc_vcheck:'Check valves (×6 total)',
+    rk_tc_vel_emb:'Piston tube velocity',
   }
 };
 
@@ -1961,15 +2321,33 @@ function applyLang() {
     'rdc':   'rk_dc',   'rhc':   'rk_hc',   'rVc':   'rk_Vc',
     'rdcol': 'rk_dcol', 'rMC1':  'rk_MC1',
     'rFA':   'rk_FA',   'rFn':   'rk_Fn',
+    // T System
     'tVol':  'rk_tvol', 'tdT':   'rk_tdT',  'thT':   'rk_thT', 'tLT': 'rk_tLT',
     'tQ':    'rk_tQ',   'tDc':   'rk_tDc',  'tLc':   'rk_tLc',
     'tPf':   'rk_tPf',  'tPN':   'rk_tPN',
     'tSep':  'rk_tSep', 'tEst':  'rk_tEst', 'tVest': 'rk_tVest',
+    'tQls': 'rk_tQls','tQlm': 'rk_tQlm','tEvT': 'rk_tev_t',
+    'tPcond':'rk_tPcond','tPdiff':'rk_tPdiff','tPexpl':'rk_tPexpl',
+    'tCd':'rk_tc_desague','tCa':'rk_tc_aire','tCe':'rk_tc_entrada',
+    'tCemb':'rk_tc_emb','tCvck':'rk_tc_vcheck','tVemb':'rk_tc_vel_emb',
+    // Generator
     'gPn':   'rk_gPn',  'gV':    'rk_gV',   'gI':    'rk_gI',
     'gv':    'rk_gv',   'gvp':   'rk_gvp',  'gF':    'rk_gF',
     'gpol':  'rk_gpol', 'gInv':  'rk_ginv',
+    // Appliances
     'ewh':   'rk_ewh',  'ewhd':  'rk_ewhd', 'ekwha': 'rk_ekwha',
   };
+  // Translate .rk labels that have no rv-ID (static text nodes matched by content)
+  // Build reverse map from ES text → i18n key for all rk_ keys
+  const rkTextMap = {};
+  Object.keys(i18n.es).filter(k=>k.startsWith('rk_')&&!k.endsWith('_val')).forEach(k=>{
+    rkTextMap[i18n.es[k]] = k;
+    if(i18n.en[k]) rkTextMap[i18n.en[k]] = k;
+  });
+  document.querySelectorAll('.rr .rk').forEach(rk=>{
+    const key = rkTextMap[rk.textContent.trim()];
+    if(key) rk.textContent = t(key);
+  });
   Object.entries(rkMap).forEach(([id, key]) => {
     const el = document.getElementById(id);
     if(!el) return;
@@ -2028,31 +2406,318 @@ function applyLang() {
   document.querySelector('.hud-stat:nth-child(3) .sl').textContent = t('hud_E');
   document.querySelector('.hud-stat:nth-child(4) .sl').textContent = t('hud_P');
 
-  // Re-render to update dynamic content
+  // Translate all [data-i18n] elements (safe — only updates text, no event handlers)
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var k=el.getAttribute('data-i18n');
+    var v=i18n[currentLang][k];
+    if(v) el.textContent=v;
+  });
+  // fab-toggle text
+  var fabTg=document.getElementById('fab-toggle');
+  if(fabTg) fabTg.textContent=fabDetailOpen?t('fab_detail_close'):t('fab_detail_open');
+  // location buttons
+  var bRio=document.getElementById('sloc-rio');
+  var bMar=document.getElementById('sloc-mar');
+  if(bRio) bRio.textContent=t('sm_loc_rio');
+  if(bMar) bMar.textContent=t('sm_loc_mar');
+  // Re-render to update dynamic content (render() internally calls renderSimple/Inversor)
   if(M) render();
   if(document.getElementById('tc_grafica').classList.contains('on')) drawCharts();
 }
 
-// Patch render() to use i18n for dynamic strings
-const _origRender = render;
-render = function() {
-  _origRender();
-  if(!M) return;
-  // Update static row labels that render() doesn't touch
-  document.querySelectorAll('.rr').forEach(rr => {
-    const rk = rr.querySelector('.rk');
-    const rv = rr.querySelector('.rv');
-    if(!rk || !rv) return;
-    const txt = rk.textContent;
-    // Map current text to key (works for both languages)
-    const reverseMap = {};
-    ['es','en'].forEach(lang => {
-      Object.entries(i18n[lang]).forEach(([k,v]) => { reverseMap[v] = k; });
-    });
-    const key = reverseMap[txt];
-    if(key && i18n[currentLang][key]) rk.textContent = i18n[currentLang][key];
+// ════════════════════════════════════════════════════════
+// MODE SYSTEM + INVESTOR + FARM SCALE
+// ════════════════════════════════════════════════════════
+let currentMode='tecnico';
+let simpleLoc='rio';
+let simpleSize='s';
+const SIMPLE_MULT={s:1,m:10,l:100};  // multiplier on current module
+
+function setMode(mode){
+  currentMode=mode;
+  ['simple','tecnico','inversor'].forEach(m=>{
+    const b=document.getElementById('mbtn-'+m);if(!b)return;
+    const on=m===mode;
+    b.style.background=on?'rgba(0,200,240,.15)':'transparent';
+    b.style.color=on?'var(--teal)':'var(--muted)';
+    b.style.border=on?'1px solid var(--teal)':'1px solid var(--brd)';
   });
-};
+  const tt=document.getElementById('tech-tabs');
+  if(tt)tt.style.display=mode==='tecnico'?'flex':'none';
+  // Hide all .tc panels (both class-based and the new ones)
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
+  if(mode==='tecnico'){
+    // Reactivate first tech tab
+    const ft=document.querySelector('#tech-tabs .tab');
+    if(ft)tab(ft,'balance');
+    else{const bc=document.getElementById('tc_balance');if(bc)bc.classList.add('on');}
+  } else {
+    const el=document.getElementById('tc_'+mode);
+    if(el)el.classList.add('on');
+  }
+  if(mode==='simple')   renderSimple();
+  if(mode==='inversor') renderInversor();
+}
+
+function setSimpleLoc(loc){
+  simpleLoc=loc;
+  ['rio','mar'].forEach(l=>{
+    const b=document.getElementById('sloc-'+l);if(!b)return;
+    const on=l===loc;
+    b.style.background=on?'rgba(0,200,240,.15)':'transparent';
+    b.style.color=on?'var(--teal)':'var(--muted)';
+    b.style.border=on?'1px solid var(--teal)':'1px solid var(--brd)';
+  });renderSimple();
+}
+
+function setSimpleSize(sz){
+  simpleSize=sz;
+  ['s','m','l'].forEach(s=>{
+    const b=document.getElementById('ssize-'+s);if(!b)return;
+    const on=s===sz;
+    b.style.background=on?'rgba(240,168,0,.15)':'transparent';
+    b.style.color=on?'var(--amber)':'var(--muted)';
+    b.style.border=on?'1px solid var(--amber)':'1px solid var(--brd)';
+  });renderSimple();
+}
+
+function fmtW(w){if(w>=1e9)return(w/1e9).toFixed(2)+' GW';if(w>=1e6)return(w/1e6).toFixed(2)+' MW';if(w>=1e3)return(w/1e3).toFixed(1)+' kW';return w.toFixed(1)+' W';}
+function fmtE(kwh){if(kwh>=1e9)return(kwh/1e9).toFixed(2)+' TWh';if(kwh>=1e6)return(kwh/1e6).toFixed(2)+' GWh';if(kwh>=1e3)return(kwh/1e3).toFixed(1)+' MWh';return kwh.toFixed(0)+' kWh';}
+function fmtEur(v){
+  const neg=v<0;const a=Math.abs(v);const s=neg?'-':'';
+  if(a>=1e9)  return s+(a/1e9).toFixed(2)+' B€';
+  if(a>=1e6)  return s+(a/1e6).toFixed(2)+' M€';
+  if(a>=1e3)  return s+(a/1e3).toFixed(1)+' k€';
+  if(a>=1)    return s+a.toFixed(2)+' €';
+  if(a>=0.01) return s+a.toFixed(3)+' €';
+  return s+a.toExponential(2)+' €';
+}
+
+function renderSimple(){
+  if(!M)return;
+  const nmod  = parseInt(document.getElementById('snmod').value)||1;
+  const mult  = SIMPLE_MULT[simpleSize]||1;
+  const total = nmod * mult;            // effective number of modules
+  const totW  = M.PW  * total;
+  const totKa = M.ka  * 1000 * total;  // kWh/year
+  const coches= Math.floor(M.kd * 1000 * total / 40);
+  const hog   = totKa / 3500;
+  const se=id=>document.getElementById(id);
+  // Size label shown next to buttons
+  const sizeDesc={s:t('sm_size_1'),m:t('sm_size_10'),l:t('sm_size_100')};
+  const modLbl=currentLang==='en'?' · each module: r=':' · cada módulo: r=';
+  const siEl=document.getElementById('sr-size-info');
+  if(siEl) siEl.textContent=sizeDesc[simpleSize]
+    +modLbl+Math.round(M.r*1000)+'mm  H='+Math.round(M.H*100)+'cm  '+M.PW.toFixed(1)+'W';
+  if(se('sr-pot'))    se('sr-pot').textContent=fmtW(totW);
+  if(se('sr-coches')) se('sr-coches').textContent=coches>=1?coches.toLocaleString():'<1';
+  if(se('sr-hog'))    se('sr-hog').textContent=hog>=1000?(hog/1000).toFixed(1)+'k':hog.toFixed(1);
+  if(se('sr-kwha'))   se('sr-kwha').textContent=fmtE(totKa);
+  const MW=totW/1e6;
+  const locTxt=t(simpleLoc==='rio'?'eq_rio':'eq_mar');
+  let eq='';
+  if(MW>=1000)     eq=(MW/1000).toFixed(1)+t('eq_gw');
+  else if(MW>=100) eq=MW.toFixed(0)+t('eq_mw_hi').replace('{loc}',locTxt);
+  else if(MW>=10)  eq=MW.toFixed(1)+t('eq_mw_md').replace('{loc}',locTxt);
+  else if(MW>=1)   eq=MW.toFixed(2)+t('eq_mw_lo').replace('{loc}',locTxt);
+  else if(totW>=100) eq=(totW/1000).toFixed(2)+t('eq_kw');
+  else eq=totW.toFixed(1)+t('eq_w');
+  if(se('sr-equiv')) se('sr-equiv').textContent=eq;
+}
+
+function renderInversor(){
+  if(!M)return;
+  const nmod   =parseInt(document.getElementById('inmod').value)||1;
+  renderFabCost(nmod);
+  const capexKW=parseFloat(document.getElementById('icapex').value)||800;
+  const precio =parseFloat(document.getElementById('iprecio').value)||0.12;
+  const opexKW =parseFloat(document.getElementById('iopex').value)||20;
+  const vida   =parseInt(document.getElementById('ivida').value)||25;
+  const PW_kW  =M.PW/1000*nmod;
+  const kwhA   =M.ka*1000*nmod;
+  const capex  =capexKW*PW_kW;
+  const opex   =opexKW*PW_kW;
+  const ingreso=kwhA*precio;
+  const bNeto  =ingreso-opex;
+  const payback=bNeto>0?capex/bNeto:Infinity;
+  const lcoe   =(capex+opex*vida)/(kwhA*vida||1);
+  let van=-capex;
+  for(let t=1;t<=vida;t++)van+=bNeto/Math.pow(1.05,t);
+  let tir=0;
+  if(bNeto>0&&capex>0){let lo=0,hi=2;for(let i=0;i<60;i++){const mid=(lo+hi)/2;let npv=-capex;for(let t2=1;t2<=vida;t2++)npv+=bNeto/Math.pow(1+mid,t2);npv>0?lo=mid:hi=mid;}tir=lo;}
+  const se=id=>document.getElementById(id);
+  if(se('ir-ingresos')) se('ir-ingresos').textContent=fmtEur(ingreso)+'/año';
+  if(se('ir-capex'))    se('ir-capex').textContent=fmtEur(capex);
+  if(se('ir-payback'))  se('ir-payback').textContent=isFinite(payback)?payback.toFixed(1)+' años':'∞';
+  if(se('ir-lcoe'))     se('ir-lcoe').textContent=lcoe.toFixed(4)+' €';
+  if(se('ir-van'))      se('ir-van').textContent=fmtEur(van);
+  if(se('ir-tir'))      se('ir-tir').textContent=tir>0?(tir*100).toFixed(1)+'%':'n/a';
+  const techs=[
+    {name:currentLang==='en'?'This generator':'Este generador',lcoe,col:'var(--green)'},
+    {name:currentLang==='en'?'Solar PV':'Solar FV',lcoe:0.040,col:'var(--amber)'},
+    {name:currentLang==='en'?'Wind':'Eólico',lcoe:0.035,col:'var(--teal)'},
+    {name:currentLang==='en'?'Gas CCGT':'Gas CC',lcoe:0.075,col:'var(--muted)'},
+    {name:'Nuclear',lcoe:0.095,col:'var(--muted)'},
+  ];
+  const maxL=Math.max(...techs.map(t=>t.lcoe),0.001);
+  const barEl=se('ir-lcoe-bar');
+  if(barEl)barEl.innerHTML=techs.map(t=>{
+    const pct=Math.min(100,(t.lcoe/maxL)*100);
+    return '<div style="display:flex;align-items:center;gap:5px;margin-bottom:4px">'+
+      '<span style="width:100px;font-size:9px;color:var(--muted);flex-shrink:0">'+t.name+'</span>'+
+      '<div style="flex:1;height:9px;background:var(--bg);border-radius:2px;overflow:hidden">'+
+      '<div style="width:'+pct.toFixed(1)+'%;height:100%;background:'+t.col+';border-radius:2px;transition:width .3s"></div></div>'+
+      '<span style="width:52px;text-align:right;font-size:9px;color:'+t.col+';font-weight:700">'+t.lcoe.toFixed(4)+' €</span></div>';
+  }).join('');
+  // Scale warning
+  const warnEl=document.getElementById('ir-scale-warn');
+  if(warnEl){
+    if(PW_kW<0.1){
+      warnEl.style.display='block';
+      warnEl.textContent=t('inv_warn_pre')+fmtW(M.PW*nmod)+t('inv_warn_mid');
+    } else {
+      warnEl.style.display='none';
+    }
+  }
+}
+
+function renderFarmScale(){
+  if(!M)return;
+  const nmod=parseInt(document.getElementById('snmod_tech').value)||1;
+  const totW=M.PW*nmod;
+  const totKa=M.ka*1000*nmod;
+  const el=document.getElementById('farm-mini');
+  if(!el)return;
+  el.innerHTML=
+    '<span style="color:var(--amber)">'+t('farm_pot')+'</span><span style="color:var(--amber)">'+fmtW(totW)+'</span>'+
+    '<span style="color:var(--teal)">'+t('farm_eyr')+'</span><span style="color:var(--teal)">'+fmtE(totKa)+'</span>'+
+    '<span style="color:var(--muted)">'+t('farm_hog')+'</span><span style="color:var(--muted)">'+(totKa/3500).toFixed(0)+'</span>'+
+    '<span style="color:var(--muted)">'+t('farm_mod')+'</span><span style="color:var(--muted)">'+nmod+'</span>';
+}
+
+// ════════════════════════════════════════════════════════
+// FABRICATION COST MODEL
+// ════════════════════════════════════════════════════════
+let fabDetailOpen = false;
+function toggleFabDetail(){
+  fabDetailOpen = !fabDetailOpen;
+  const el = document.getElementById('fab-detail');
+  const tg = document.getElementById('fab-toggle');
+  if(el) el.style.display = fabDetailOpen ? 'block' : 'none';
+  if(tg) tg.textContent = fabDetailOpen ? t('fab_detail_close') : t('fab_detail_open');
+}
+
+function calcFabCost(m, nmod){
+  // Returns {unit, total, eurW, rows}
+  // m = M (current calc result)
+  // All prices in € based on standard market rates
+
+  const r_mm  = Math.round(m.r*1000);
+  const dc_mm = Math.round(m.dc*1000);
+  const dT_mm = Math.round(m.dT*1000);
+  const H_cm  = Math.round(m.H*100);
+  const h_cm  = Math.round(m.h*100);
+  const LT_cm = +(m.LT*100).toFixed(1);
+  const dn_c  = m.dn_c;
+  const dn_T  = m.dn_T;
+
+  // ── Material cost model (€/unit) ──────────────────────────────────────────
+  // Tubo PVC precio aprox: 2-8 €/m según DN
+  const pvcPricePerM = dn => {
+    if(dn<=50)  return 2.5;
+    if(dn<=110) return 4.0;
+    if(dn<=160) return 6.5;
+    if(dn<=200) return 9.0;
+    if(dn<=250) return 13.0;
+    if(dn<=315) return 20.0;
+    if(dn<=400) return 32.0;
+    if(dn<=500) return 50.0;
+    return 70.0;
+  };
+
+  // Cilindro (tubo PVC r_mm*2 de diámetro, h+0.08m de longitud)
+  const dn_cil = m.dn_c > 200 ? m.dn_c : Math.ceil(r_mm*2/10)*10;  // aprox DN del cilindro
+  const l_cil  = m.h + 0.10;
+  const c_cil  = pvcPricePerM(r_mm*2) * l_cil + 4.0;  // + tapas
+
+  // Columna (DN columna, H+0.3m)
+  const l_col  = m.H + 0.30;
+  const c_col  = pvcPricePerM(dc_mm) * l_col + 6.0;  // + bridas
+
+  // Sistema T (tubo DN_T, longitud LT + accesorios)
+  const c_T    = pvcPricePerM(dn_T) * (m.LT + 0.30) + dn_T * 0.12 + 8.0;  // codos + sellado
+
+  // Conductos (4 tubos DN_c, longitud H+0.2)
+  const l_cond = m.H + 0.25;
+  const c_cond = pvcPricePerM(dn_c) * l_cond * 4;
+
+  // Válvulas check (6 uds, precio según DN)
+  const checkPrice = dn => dn<=50?3:dn<=110?6:dn<=160?10:dn<=200?15:22;
+  const c_valv = checkPrice(dn_c) * 6;
+
+  // Estanque (polipropileno o fibra de vidrio, precio por litro ~0.08 €/L para vol grande)
+  const vol_L  = m.est_largo * m.est_ancho * 2.5 * 1000;
+  const c_est  = Math.min(800, Math.max(80, vol_L * 0.08));
+
+  // Generador lineal TFPM (componente de mayor coste — precio orientativo por potencia)
+  // DIY: ~15 €/W para prototipos pequeños, ~3 €/W para >1kW, ~0.8 €/W para >10kW
+  const pw = m.PW;
+  const eurW_gen = pw < 10 ? 15 : pw < 100 ? 8 : pw < 1000 ? 3 : pw < 10000 ? 1.2 : 0.6;
+  const c_gen  = pw * eurW_gen;
+
+  // Electrónica (rectificador + MPPT + inversor + batería buffer)
+  const c_elec = Math.max(50, m.PW * 0.8);
+
+  // Accesorios y misc (tornillería, sellante, cable, etc.)
+  const c_misc = (c_cil + c_col + c_T + c_cond + c_valv) * 0.12;
+
+  const rows = [
+    {name:t('fab_r_cil')+' (Ø'+r_mm*2+'mm·'+h_cm+'cm)',    cost:c_cil,  note:t('fab_n_cil')},
+    {name:t('fab_r_col')+' (DN'+dc_mm+'·'+H_cm+'cm)',       cost:c_col,  note:t('fab_n_col')},
+    {name:t('fab_r_T')+' (DN'+dn_T+'·'+LT_cm+'cm)',         cost:c_T,    note:t('fab_n_T')},
+    {name:t('fab_r_cond')+' (4×DN'+dn_c+'·'+Math.round(l_cond*100)+'cm)',cost:c_cond,note:t('fab_n_cond')},
+    {name:t('fab_r_valv')+' (6×DN'+dn_c+')',                cost:c_valv, note:t('fab_n_valv')},
+    {name:t('fab_r_est')+' ('+Math.round(vol_L)+' L)',      cost:c_est,  note:t('fab_n_est')},
+    {name:t('fab_r_gen')+' ('+pw.toFixed(1)+'W)',           cost:c_gen,  note:pw<100?t('fab_n_gen_diy'):t('fab_n_gen_ind')},
+    {name:t('fab_r_elec'),                                  cost:c_elec, note:t('fab_n_elec')},
+    {name:t('fab_r_misc'),                                  cost:c_misc, note:t('fab_n_misc')},
+  ];
+
+  const unit  = rows.reduce((s,r)=>s+r.cost,0);
+  const total = unit * nmod;
+  const eurW  = unit / (m.PW||1);
+
+  return {unit, total, eurW, rows};
+}
+
+function renderFabCost(nmod){
+  if(!M) return;
+  const fab = calcFabCost(M, nmod);
+  const se  = id => document.getElementById(id);
+  if(se('fab-unit'))  se('fab-unit').textContent  = fmtEur(fab.unit);
+  if(se('fab-total')) se('fab-total').textContent = fmtEur(fab.total);
+  if(se('fab-eurw'))  se('fab-eurw').textContent  = fmtEur(fab.eurW)+'/W';
+  if(se('fab-nmod'))  se('fab-nmod').textContent  = nmod;
+  const rowsEl = se('fab-rows');
+  if(rowsEl){
+    const maxC = Math.max(...fab.rows.map(r=>r.cost));
+    rowsEl.innerHTML = fab.rows.map(r=>{
+      const pct = Math.min(100,(r.cost/maxC)*100);
+      return '<div style="margin-bottom:6px">'
+        +'<div style="display:flex;justify-content:space-between;font-size:9.5px;margin-bottom:2px">'
+        +'<span style="color:var(--muted)">'+r.name+'</span>'
+        +'<span style="color:var(--amber);font-weight:700">'+fmtEur(r.cost)
+        +(r.note?' <span style="color:var(--muted);font-weight:400;font-size:8.5px">'+r.note+'</span>':'')
+        +'</span></div>'
+        +'<div style="height:5px;background:var(--bg);border-radius:2px;overflow:hidden">'
+        +'<div style="width:'+pct.toFixed(1)+'%;height:100%;background:var(--amber);opacity:.6;border-radius:2px"></div>'
+        +'</div></div>';
+    }).join('')
+    + '<div style="display:flex;justify-content:space-between;border-top:1px solid var(--brd);padding-top:6px;margin-top:4px;font-size:10px;">'
+    + '<span style="color:var(--muted);font-weight:700">'+t('fab_total_row')+'</span>'
+    + '<span style="color:var(--green);font-weight:700">'+fmtEur(fab.unit)+'</span></div>';
+  }
+}
 
 function setLang(lang) {
   currentLang = lang;
@@ -2077,5 +2742,360 @@ drawFrame = function(time) {
 };
 
 </script>
+
+<!-- ═══ MODAL INFORME PVC ════════════════════════════════════════════ -->
+<div id="modal-informe" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.82);overflow-y:auto;padding:24px 12px;">
+  <div id="informe-contenido" style="max-width:860px;margin:0 auto;background:#0d1520;border:1px solid #1e3a5f;border-radius:10px;padding:32px 36px;font-family:'Share Tech Mono',monospace;color:#c8d8e8;position:relative;">
+    <button onclick="document.getElementById('modal-informe').style.display='none'" style="position:absolute;top:16px;right:20px;background:none;border:1px solid #334;color:#668;font-size:18px;cursor:pointer;border-radius:4px;padding:2px 10px;" title="Cerrar">✕</button>
+    <button onclick="imprimirInforme()" style="position:absolute;top:16px;right:70px;background:rgba(0,200,240,.12);border:1px solid var(--teal);color:var(--teal);font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;border-radius:4px;padding:4px 12px;">⬇ EXPORTAR PDF</button>
+    <div id="informe-body"></div>
+  </div>
+</div>
+
+<script>
+function imprimirInforme(){
+  const w=window.open('','_blank');
+  const body=document.getElementById('informe-body').innerHTML;
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+  <title>Informe Montaje PVC — Generador Concéntrico V3</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Share Tech Mono',monospace;background:#fff;color:#111;padding:28px 36px;font-size:12px;line-height:1.7}
+    h1{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#003366;border-bottom:2px solid #003366;padding-bottom:6px;margin-bottom:18px}
+    h2{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#005599;margin:20px 0 8px;border-left:3px solid #f0a800;padding-left:8px;text-transform:uppercase}
+    h3{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#007a80;margin:14px 0 6px}
+    table{width:100%;border-collapse:collapse;margin:8px 0 14px}
+    td,th{padding:5px 10px;border:1px solid #ccd;font-size:11.5px}
+    th{background:#e8f0f8;font-weight:700;text-align:left}
+    tr:nth-child(even) td{background:#f5f8fc}
+    .val{color:#c04000;font-weight:700}
+    .note{background:#fffbe6;border-left:3px solid #f0a800;padding:8px 12px;margin:10px 0;font-size:11px}
+    .warn{background:#fff0f0;border-left:3px solid #e04040;padding:8px 12px;margin:10px 0;font-size:11px}
+    .ok{background:#f0fff4;border-left:3px solid #00aa55;padding:8px 12px;margin:10px 0;font-size:11px}
+    .step{counter-increment:step;padding:7px 12px 7px 40px;margin:5px 0;position:relative;background:#f8faff;border:1px solid #dde}
+    .step::before{content:counter(step);position:absolute;left:10px;top:7px;background:#003366;color:#fff;width:20px;height:20px;border-radius:50%;text-align:center;line-height:20px;font-size:11px;font-weight:700}
+    ol.steps{list-style:none;counter-reset:step}
+    @media print{body{padding:15px} .no-print{display:none}}
+  </style></head><body>${body}</body></html>`);
+  w.document.close();
+  setTimeout(()=>{w.print();},600);
+}
+
+function generarInformePVC(){
+  if(!M){ alert('Activa primero el preset Proto PVC'); return; }
+  const f2=(v,d=2)=>v!=null?+v.toFixed(d):'—';
+  const f=(v,d=2)=>typeof v==='number'?v.toFixed(d):v;
+
+  // Valores calculados del prototipo
+  const r_mm   = Math.round(M.r*1000);
+  const d_mm   = Math.round(M.d*1000);
+  const h_cm   = (M.h*100).toFixed(1);
+  const H_cm   = (M.H*100).toFixed(0);
+  const dc_mm  = Math.round(M.dc*1000);
+  const dT_mm  = Math.round(M.dT*1000);
+  const LT_cm  = (M.LT*100).toFixed(1);
+  const hT_cm  = (M.hT*100).toFixed(1);
+  const Qev_Lm = (M.Qev*60000).toFixed(1);
+  const el_cm  = Math.round(M.est_largo*100);
+  const ea_cm  = Math.round(M.est_ancho*100);
+  const Vc_L   = (M.Vc*1000).toFixed(3);
+  const VT_L   = (M.VT*1000).toFixed(3);
+  const PW_W   = M.PW.toFixed(2);
+  const Pnom_W = Math.ceil(M.PW/10)*10;
+  const vcil   = (M.vcil*1000).toFixed(1);
+  const vcilP  = (M.vcil*1500).toFixed(1);
+  // Hydraulic / pressure analysis for informe
+  const v_inf   = 1.5;                                        // design flow m/s
+  const Lc_inf  = (M.H + 0.20);                              // conduit length [m]
+  const Dc_inf  = (M.dn_c||50)/1000;                         // conduit diameter [m]
+  const f_inf   = 0.02;                                       // Darcy PVC
+  const dPf_inf = f_inf*(Lc_inf/Dc_inf)*(RHO*v_inf*v_inf/2);
+  const dPe_inf = 0.5*RHO*v_inf*v_inf;
+  const Pc_inf  = dPf_inf + dPe_inf;                         // back-pressure Pa
+  const Pf_inf  = RHO*G*M.H;                                 // fondo Pa
+  const Pn_inf  = Pf_inf - Pc_inf;                           // net Pa
+  const hn_inf  = (Pn_inf/(RHO*G)).toFixed(2);               // net head m
+  const lp_inf  = (Pc_inf/Pf_inf*100).toFixed(1);            // % loss
+  const Ac_inf  = Math.PI*(Dc_inf/2)*(Dc_inf/2);
+  const Qtot_Ls = (v_inf*Ac_inf*2*1000).toFixed(3);          // L/s ×2 conduits
+  const Qtot_Lm = (v_inf*Ac_inf*2*60000).toFixed(1);         // L/min
+  const tEvac   = (M.VT/(v_inf*Ac_inf*2)).toFixed(1);        // s to drain T
+  // Conduit entry to column
+  const dc_mm_inf = Math.round(M.dc*1000);
+  const L_entry  = Math.round(dc_mm_inf*0.6);                // mm horizontal
+  // Piston tube velocity
+  const v_emb_inf = (v_inf*Ac_inf/Ac_inf).toFixed(2);        // same DN → same v
+  const vcil1_W  = (M.vcil1*1000).toFixed(1);
+  const vcil2_W  = (M.vcil2*1000).toFixed(1);
+  const vcilP1   = (M.vcil1*1500).toFixed(0);
+  const vcilP2   = (M.vcil2*1500).toFixed(0);
+  const t1_W     = M.t1.toFixed(1);
+  const t2_W     = M.t2.toFixed(1);
+  const vRat_W   = (M.vcil1/M.vcil2).toFixed(2);
+  const Ppeak_W  = Math.ceil(M.MC1*9.81*M.vcil1*M.eta/50)*50;
+  const Pinv_W   = Math.ceil(Ppeak_W/100)*100;
+  const bufWh_W  = ((Ppeak_W-M.PW)*M.t1/3600).toFixed(3);
+  const f1_W     = (M.vcil1/(2*0.1)).toFixed(3);
+  const f2_W     = (M.vcil2/(2*0.1)).toFixed(3);
+  const Fn_N   = M.Fn.toFixed(2);
+  const FA_N   = M.FA.toFixed(2);
+  const Fmax_N = M.Fmax.toFixed(1);
+  const npol   = M.npol;
+  const tc_s   = M.tc.toFixed(0);
+  const dn_T   = M.dn_T;
+  const dn_c   = M.dn_c;
+  const ec1    = M.ec1.toFixed(2);
+  const ec2    = M.ec2.toFixed(2);
+  const eT_J   = M.eT.toFixed(2);
+
+  // DN columna — DN200 para dc=170mm
+  const dn_col = 200;
+
+  // Pared PVC estimada
+  const e_cil_mm = 5;   // pared mínima PVC cilindro DN140
+  const e_col_mm = 6;   // pared mínima PVC columna DN200
+  const e_T_mm   = 5;   // pared PVC barra T DN110
+
+  // Longitudes PVC
+  const L_cil_cm  = parseFloat(h_cm) + 4;   // +4cm embolo+tapas
+  const L_col_cm  = parseFloat(H_cm) + 20;  // +20cm para anclaje/uniones
+  const L_T_cm    = parseFloat(LT_cm);
+
+  const html = `
+<h1>📋 INFORME DE MONTAJE — PROTOTIPO PVC<br>
+<span style="font-size:14px;font-weight:400;color:#555">Generador Concéntrico V3 Rev.15 · T Lateral Bidireccional</span></h1>
+<p style="color:#555;font-size:11px;margin-bottom:18px">Jesús de León Plata · Patente concedida · Generado automáticamente desde el simulador</p>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>1 · Resumen de la configuración</h2>
+<table>
+  <tr><th>Parámetro</th><th>Valor</th><th>Notas</th></tr>
+  <tr><td>Radio cilindro r</td><td class="val">${r_mm} mm</td><td>Interior del cilindro</td></tr>
+  <tr><td>Diámetro cilindro d</td><td class="val">${d_mm} mm</td><td>Usar tubo PVC DN140 interior</td></tr>
+  <tr><td>Altura cilindro h</td><td class="val">${h_cm} cm</td><td>Longitud útil del cilindro</td></tr>
+  <tr><td>Recorrido H_rec</td><td class="val">${H_cm} cm</td><td>Recorrido vertical del cilindro</td></tr>
+  <tr><td>Diámetro columna dc</td><td class="val">${dc_mm} mm → DN${dn_col}</td><td>Holgura radial: ${(M.hol*1000).toFixed(0)} mm por lado</td></tr>
+  <tr><td>Diámetro barra T dT</td><td class="val">${dT_mm} mm → DN${dn_T}</td><td>Tubo PVC para la barra de la T</td></tr>
+  <tr><td>Longitud barra T LT</td><td class="val">${LT_cm} cm</td><td>Longitud total de la barra horizontal</td></tr>
+  <tr><td>Altura T hT</td><td class="val">${hT_cm} cm</td><td>Altura interior del depósito T</td></tr>
+  <tr><td>Estanque (planta)</td><td class="val">${el_cm} × ${ea_cm} cm</td><td>Largo × ancho (altura fija: 250 cm)</td></tr>
+  <tr><td>Volumen cilindro Vc</td><td class="val">${Vc_L} L</td><td>Agua desplazada por ciclo</td></tr>
+  <tr><td>Volumen total T VT</td><td class="val">${VT_L} L</td><td>Vc + volumen anular columna</td></tr>
+  <tr><td>Potencia media</td><td class="val">${PW_W} W</td><td>Prototipo de validación funcional</td></tr>
+  <tr><td>Ciclos/hora</td><td class="val">${120}</td><td>tc = ${tc_s} s/ciclo</td></tr>
+</table>
+<div class="note">⚠️ Esta es una configuración de <strong>prototipo de laboratorio</strong>. La potencia (${PW_W} W) es intencionalmente pequeña para validar el principio de funcionamiento con materiales accesibles y bajo coste. Las configuraciones A y B (hogares reales) requieren cilindros de 0.4–0.5 m de radio.</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>2 · Lista de materiales PVC</h2>
+
+<h3>2.1 · Cilindro flotante (C1/C2)</h3>
+<table>
+  <tr><th>Componente</th><th>Especificación</th><th>Cantidad</th><th>Notas</th></tr>
+  <tr><td>Tubo PVC presión</td><td class="val">DN140 (Ø int. ~140 mm) · e=${e_cil_mm} mm · L≥${L_cil_cm.toFixed(0)} cm</td><td>1</td><td>PN10 mínimo</td></tr>
+  <tr><td>Tapa plana PVC</td><td>DN140</td><td>2</td><td>Tapas superior e inferior del cilindro</td></tr>
+  <tr><td>Junta tórica EPDM</td><td>Ø int. 140 mm · sección 3 mm</td><td>2</td><td>Sellado de tapas</td></tr>
+  <tr><td>Lastre ajustable</td><td>Plomo/arena + carcasa estanca</td><td>1</td><td>Ajustar hasta MC1≈${(M.MC1).toFixed(2)} kg total con agua</td></tr>
+</table>
+
+<h3>2.2 · Columna guía</h3>
+<table>
+  <tr><th>Componente</th><th>Especificación</th><th>Cantidad</th><th>Notas</th></tr>
+  <tr><td>Tubo PVC presión</td><td class="val">DN200 (Ø int. ~200 mm) · e=${e_col_mm} mm · L≥${L_col_cm.toFixed(0)} cm</td><td>1</td><td>La columna guía al cilindro</td></tr>
+  <tr><td>Brida PVC DN200</td><td>PN10</td><td>2</td><td>Anclaje superior e inferior al estanque</td></tr>
+  <tr><td>Guías/rozaderas HDPE</td><td>Ø ext. 200 mm · ancho 20 mm · 3 posiciones</td><td>1 set (3 ud)</td><td>Separadas 120° · reducen fricción cilindro-columna</td></tr>
+</table>
+<div class="note">💡 La holgura radial de ${(M.hol*1000).toFixed(0)} mm entre cilindro (Ø${d_mm}) y columna (Ø${dc_mm}) permite el paso del agua sin excesiva fricción. Si se usa HDPE para las guías, esta holgura puede reducirse a 10 mm.</div>
+
+<h3>2.3 · Sistema T (depósito de inversión)</h3>
+<table>
+  <tr><th>Componente</th><th>Especificación</th><th>Cantidad</th><th>Notas</th></tr>
+  <tr><td>Tubo PVC barra T</td><td class="val">DN${dn_T} (Ø int. ≈${dT_mm} mm) · L≥${(parseFloat(LT_cm)+4).toFixed(0)} cm</td><td>1</td><td>Barra horizontal del mecanismo T</td></tr>
+  <tr><td>Codo PVC 90°</td><td>DN${dn_T} hembra</td><td>2</td><td>Unión barra horizontal ↔ conductos verticales</td></tr>
+  <tr><td>Tubo conducto agua</td><td class="val">DN${dn_c} · L≥${parseFloat(H_cm)+10} cm (×2 uds)</td><td>2</td><td>Conductos de desagüe agua hacia superficie</td></tr>
+  <tr><td>Tubo conducto aire</td><td class="val">DN${dn_c} · L≥${parseFloat(H_cm)+10} cm (×2 uds)</td><td>2</td><td>Conductos de entrada de aire a la T</td></tr>
+  <tr><td>Válvula check PVC</td><td>DN${dn_c} · cuerpo PVC · muelle inox</td><td>4</td><td>2 en agua (sólo sube↑) + 2 en aire (sólo entra↓)</td></tr>
+  <tr><td>Émbolo HDPE</td><td>Ø = Ø int. T − 2 mm · longitud = 40% LT</td><td>1</td><td>Con junta O-ring PTFE perimetral</td></tr>
+  <tr><td>Pasador/guía émbolo</td><td>Varilla inox Ø8 mm</td><td>1</td><td>Carril de guía del émbolo dentro de la T</td></tr>
+  <tr><td>Pegamento PVC</td><td>Tipo "pegamento azul" o cementante PVC</td><td>1 bote</td><td>Para uniones permanentes</td></tr>
+  <tr><td>Cinta PTFE + sellante</td><td>—</td><td>—</td><td>Para roscas y uniones desmontables</td></tr>
+</table>
+
+<h3>2.4 · Conductos de llenado de columna (entrada de agua exterior)</h3>
+<table>
+  <tr><th>Componente</th><th>Especificación</th><th>Cantidad</th><th>Notas</th></tr>
+  <tr><td>Tubo horizontal PVC</td><td>DN${dn_c} · L ≈ ${Math.round(dc_mm*0.55/10)*10} mm</td><td>2</td><td>Entradas laterales en base de columna</td></tr>
+  <tr><td>Válvula check PVC</td><td>DN${dn_c} horizontal</td><td>2</td><td>Solo deja entrar agua hacia la columna</td></tr>
+  <tr><td>Codo 90° PVC</td><td>DN${dn_c}</td><td>2</td><td>Unión tubo horizontal ↔ columna</td></tr>
+</table>
+
+<h3>2.5 · Estanque exterior</h3>
+<table>
+  <tr><th>Componente</th><th>Especificación</th><th>Cantidad</th><th>Notas</th></tr>
+  <tr><td>Depósito/estanque</td><td class="val">Mín. ${el_cm} × ${ea_cm} × 250 cm (L×A×H)</td><td>1</td><td>Polipropileno, fibra de vidrio o tela impermeabilizada</td></tr>
+  <tr><td>Volumen mínimo</td><td class="val">≈ ${Math.ceil(M.est_largo*M.est_ancho*2.5*1000/50)*50} L</td><td>—</td><td>Garantiza nivel de agua constante en todo el ciclo</td></tr>
+  <tr><td>Nivel agua</td><td>Mínimo ${parseFloat(H_cm)+5} cm desde el fondo</td><td>—</td><td>El cilindro debe quedar siempre sumergido</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>3 · Relaciones dimensionales críticas</h2>
+<div class="ok">✅ Estas proporciones <strong>deben respetarse</strong> para que el sistema funcione en el régimen esperado.</div>
+
+<table>
+  <tr><th>Relación</th><th>Fórmula</th><th>Valor prototipo</th><th>Tolerancia</th></tr>
+  <tr><td>Holgura radial cilindro-columna</td><td>hol = rc − r</td><td class="val">${(M.hol*1000).toFixed(0)} mm</td><td>±2 mm. Menor → más fricción; mayor → pérdida de Arquímedes</td></tr>
+  <tr><td>Diámetro columna / cilindro</td><td>dc/d = 1 + 2·hol/d</td><td class="val">${(M.dc/M.d).toFixed(3)}</td><td>1.10–1.25 ideal</td></tr>
+  <tr><td>Relación H_rec / h cilindro</td><td>H/h</td><td class="val">${(M.H/M.h).toFixed(2)}×</td><td>Mín. 3×. Aumentar H para más potencia</td></tr>
+  <tr><td>Altura T / altura cilindro</td><td>hT = h × 1.2</td><td class="val">${hT_cm} cm</td><td>+20% del cilindro para margen de vaciado</td></tr>
+  <tr><td>Diámetro T / diámetro T calculado</td><td>dT = 2·√(VT / (2π·hT))</td><td class="val">${dT_mm} mm → DN${dn_T}</td><td>Nunca menor. Redondear al DN superior</td></tr>
+  <tr><td>Longitud barra T</td><td>LT = dc + 2·(dT + 0.05)</td><td class="val">${LT_cm} cm</td><td>Los 5 cm extra por lado son para bridas/uniones</td></tr>
+  <tr><td>Sección conductos agua/aire</td><td>DN ≥ ${(M.dcmm).toFixed(1)} mm calculado</td><td class="val">DN${dn_c}</td><td>Nunca inferior. Limita el caudal Qev = ${Qev_Lm} L/min</td></tr>
+  <tr><td>Caudal de evacuación Qev (×2 cond.)</td><td>Q = v·A·2</td><td class="val">${Qtot_Ls} L/s = ${Qtot_Lm} L/min</td><td>Con v=1.5 m/s diseño · ambos conductos de desagüe en paralelo</td></tr>
+  <tr><td>Tiempo vaciado T completo</td><td>t_vac = VT / Q</td><td class="val">${tEvac} s</td><td>Debe ser < t2 = ${t2_W} s (duración fase subida). Si no, aumentar DN.</td></tr>
+  <tr><td>Fuerza neta C2 (Arquímedes)</td><td>Fn = FA − mc2·g</td><td class="val">${Fn_N} N</td><td>Debe ser positiva siempre</td></tr>
+  <tr><td>Presión fondo estanque</td><td>Pf = ρg·H</td><td class="val">${Pf_inf.toFixed(1)} Pa = ${(Pf_inf/1e5).toFixed(4)} bar</td><td>Presión motriz disponible para elevar agua</td></tr>
+  <tr><td>Contrapresión conductos (Darcy-W.)</td><td>ΔP = f·(L/D)·ρv²/2 + ½ρv²</td><td class="val">${Pc_inf.toFixed(1)} Pa = ${(Pc_inf/1e5).toFixed(5)} bar</td><td>Pérdidas por rozamiento + salida en conductos DN${dn_c}</td></tr>
+  <tr><td>Presión motriz neta</td><td>Pnet = Pf − ΔP</td><td class="val">${Pn_inf.toFixed(1)} Pa = ${(Pn_inf/1e5).toFixed(4)} bar</td><td>Presión efectiva que eleva el agua hasta la superficie</td></tr>
+  <tr><td>Pérdidas hidráulicas</td><td>ΔP / Pf × 100</td><td class="val">${lp_inf}%</td><td>Debe ser &lt;20%. Con DN${dn_c} y v=1.5 m/s es muy bajo.</td></tr>
+  <tr><td>Altura neta equivalente</td><td>h_net = Pnet / (ρg)</td><td class="val">${hn_inf} m</td><td>El agua se eleva efectivamente hasta esta altura desde la T</td></tr>
+</table>
+
+<h2>3b · Dimensiones de todos los conductos</h2>
+<div class="note">💧 Todos los conductos usan el mismo DN${dn_c} para simplificar el montaje y el stock de válvulas check.</div>
+<table>
+  <tr><th>Conducto</th><th>Cant.</th><th>Especificación</th><th>Válvula check</th><th>Función</th></tr>
+  <tr><td><strong>Desagüe agua T → superficie</strong></td><td>2</td><td class="val">DN${dn_c} · L = ${Math.round(Lc_inf*100)} cm vertical</td><td>↑ (solo sube)</td><td>Evacuan el agua de la T hacia la superficie por presión hidrostática</td></tr>
+  <tr><td><strong>Entrada aire exterior → T</strong></td><td>2</td><td class="val">DN${dn_c} · L = ${Math.round((M.H+0.25)*100)} cm vertical</td><td>↓ (solo entra)</td><td>Permiten entrada de aire atmosférico detrás del émbolo para igualar presión</td></tr>
+  <tr><td><strong>Llenado agua estanque → columna</strong></td><td>2</td><td class="val">DN${dn_c} · L ≈ ${L_entry} mm horizontal</td><td>→ (hacia columna)</td><td>Llenan la columna desde el estanque durante la fase de subida C2</td></tr>
+  <tr><td><strong>Tubo telescópico émbolo</strong></td><td>2</td><td class="val">DN${dn_c} · L = ${f2(parseFloat(LT_cm)/2,1)} cm por lado</td><td>—</td><td>Canalizan el agua que empuja el émbolo dentro de la barra T</td></tr>
+  <tr><td colspan="2"><strong>Total válvulas check</strong></td><td colspan="3">6 unidades DN${dn_c} PVC · 2× desagüe(↑) + 2× aire(↓) + 2× llenado(→)</td></tr>
+</table>
+
+<h3>Verificación del vaciado de la T</h3>
+<table>
+  <tr><th>Parámetro</th><th>Valor</th><th>Criterio</th></tr>
+  <tr><td>Volumen T a vaciar (VT)</td><td class="val">${VT_L} L</td><td>Vc + volumen anular</td></tr>
+  <tr><td>Caudal de vaciado (×2 conductos)</td><td class="val">${Qtot_Ls} L/s = ${Qtot_Lm} L/min</td><td>Con v=1.5 m/s en DN${dn_c}</td></tr>
+  <tr><td>Tiempo de vaciado completo</td><td class="val">${tEvac} s</td><td style="color:${parseFloat(tEvac)<parseFloat(t2_W)?'#00e87a':'#f04860'}">${parseFloat(tEvac)<parseFloat(t2_W)?'✅ OK — menor que t2 ('+t2_W+' s)':'❌ INSUFICIENTE — mayor que t2 ('+t2_W+' s), aumentar DN'}</td></tr>
+  <tr><td>Presión disponible P_fondo</td><td class="val">${Pf_inf.toFixed(0)} Pa</td><td>Presión hidrostática en fondo estanque</td></tr>
+  <tr><td>Contrapresión en conductos</td><td class="val">${Pc_inf.toFixed(0)} Pa (${lp_inf}% de P_fondo)</td><td>Pérdidas Darcy-Weisbach + salida</td></tr>
+  <tr><td>Presión motriz neta</td><td class="val">${Pn_inf.toFixed(0)} Pa → ${hn_inf} m columna</td><td>✅ Amplio margen para elevar el agua hasta la superficie</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>4 · Secuencia de montaje</h2>
+<ol class="steps">
+  <li class="step"><strong>Preparar el estanque.</strong> Construir o instalar el depósito de ${el_cm}×${ea_cm}×250 cm. Verificar estanqueidad llenando con agua limpia. Instalar el sistema de mantenimiento de nivel (válvula de flotador o depósito elevado).</li>
+  <li class="step"><strong>Montar la columna guía.</strong> Cortar el tubo DN200 a ${L_col_cm.toFixed(0)} cm. Centrar y fijar verticalmente en el fondo del estanque con brida de anclaje. Verificar verticalidad con nivel de burbuja (tolerancia ±0.5°). La base debe quedar a ≥5 cm del fondo para dejar paso al agua.</li>
+  <li class="step"><strong>Fabricar el cilindro flotante.</strong> Cortar el tubo DN140 a ${L_cil_cm.toFixed(0)} cm. Soldar/pegar tapa inferior estanca. Añadir lastre en el interior (plomo o arena en bolsa estanca) hasta que el cilindro <em>lleno de agua</em> pese ${M.MC1.toFixed(2)} kg. Cerrar tapa superior con junta tórica. Verificar estanqueidad sumergiéndolo 24 h.</li>
+  <li class="step"><strong>Instalar guías de deslizamiento.</strong> Fijar 3 rozaderas HDPE en el exterior del cilindro a 120° entre sí, a ½ altura. Deben permitir el paso del cilindro por la columna con la holgura de ${(M.hol*1000).toFixed(0)} mm sin bloquear el flujo de agua.</li>
+  <li class="step"><strong>Fabricar el sistema T.</strong> Cortar el tubo DN${dn_T} a ${(parseFloat(LT_cm)+4).toFixed(0)} cm para la barra horizontal. Sellar ambos extremos con tapas ciegas perforadas para pasar el émbolo. Instalar el émbolo HDPE con junta O-ring PTFE dentro de la barra. Comprobar que se desliza libremente de un extremo al otro.</li>
+  <li class="step"><strong>Instalar válvulas check.</strong> En los conductos de agua (desagüe hacia superficie): válvulas check orientadas ↑ (solo dejan salir agua). En los conductos de aire (entrada a la T): válvulas check orientadas hacia la T (solo deja entrar aire). En los conductos de entrada de agua a la columna: válvulas check orientadas hacia la columna. Total: <strong>6 válvulas check DN${dn_c}</strong>.</li>
+  <li class="step"><strong>Conectar la T a la columna.</strong> Unir la barra horizontal de la T al fondo de la columna mediante brida o unión encolada. El eje de la T debe ser perpendicular al eje de la columna. Conectar los 4 conductos verticales (2 agua + 2 aire por lado) mediante codos de 90° hasta el nivel de superficie.</li>
+  <li class="step"><strong>Instalar conductos de llenado.</strong> Conectar los 2 conductos horizontales de entrada de agua con sus válvulas check en la base de la columna (a 90° de la T). Verificar que el agua puede entrar libremente desde el estanque hacia el interior de la columna.</li>
+  <li class="step"><strong>Prueba hidráulica en seco.</strong> Llenar el estanque. Introducir manualmente el cilindro en la columna y verificar: (a) que el cilindro sube solo al soltar, (b) que el agua de la T sale por los conductos correctos, (c) que el aire entra por los conductos de aire sin presión excesiva.</li>
+  <li class="step"><strong>Acoplar el generador.</strong> Ver sección 5 a continuación.</li>
+  <li class="step"><strong>Primera prueba bajo carga.</strong> Con el generador conectado a una resistencia de prueba de ~${(230*230/Pnom_W).toFixed(0)} Ω · ${Pnom_W} W, verificar que el sistema oscila de forma autónoma a la frecuencia esperada (${120} ciclos/hora, tc=${tc_s} s).</li>
+</ol>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>5 · Generador lineal — especificación e instalación</h2>
+
+<h3>5.1 · Especificación del generador para este prototipo</h3>
+<div class="note">⚙ <strong>Ciclo asimétrico:</strong> bajada en seco (C1) más rápida que subida por Arquímedes (C2). El inversor se dimensiona para la potencia pico de bajada, no la media.</div>
+<table>
+  <tr><th>Parámetro</th><th>Valor requerido</th><th>Notas</th></tr>
+  <tr><td>Tipo</td><td class="val">TFPM Lineal (Transverse Flux Permanent Magnet)</td><td>Imanes permanentes en cilindro · bobinas en columna</td></tr>
+  <tr><td>Potencia media continua</td><td class="val">${Pnom_W} W</td><td>Media del ciclo completo</td></tr>
+  <tr><td>Potencia pico (bajada C1)</td><td class="val">${Ppeak_W} W</td><td>${Math.round(Ppeak_W/Pnom_W*100-100)}% sobre la media — el inversor debe soportarla</td></tr>
+  <tr><td>Tensión de salida</td><td class="val">230 V monofásico 50 Hz</td><td>Tras rectificador + inversor</td></tr>
+  <tr><td>Velocidad bajada C1</td><td class="val">${vcil1_W} mm/s · ${t1_W} s</td><td>Cilindro en seco · fase rápida</td></tr>
+  <tr><td>Velocidad subida C2</td><td class="val">${vcil2_W} mm/s · ${t2_W} s</td><td>Arquímedes · fase lenta · referencia de diseño del generador</td></tr>
+  <tr><td>Velocidades pico (×1.5)</td><td class="val">${vcilP1} ↓ / ${vcilP2} ↑ mm/s</td><td>Picos instantáneos máximos en cada fase</td></tr>
+  <tr><td>Ratio velocidad C1/C2</td><td class="val">${vRat_W}×</td><td>Rango de tensión que debe cubrir el MPPT</td></tr>
+  <tr><td>Frecuencia eléctrica</td><td class="val">${f1_W} Hz ↓ / ${f2_W} Hz ↑</td><td>Paso polo 100 mm · muy baja frecuencia — rectificador directo</td></tr>
+  <tr><td>Fuerza máx de diseño</td><td class="val">${Fmax_N} N</td><td>Fuerza neta máxima (fase bajada)</td></tr>
+  <tr><td>Recorrido activo estátor</td><td class="val">${H_cm} cm</td><td>Longitud de bobinas en la columna</td></tr>
+  <tr><td>Vel. nominal de diseño k</td><td class="val">${vcil2_W} mm/s (C2)</td><td>Dimensionar constante k del generador para la subida (fase más larga)</td></tr>
+  <tr><td>Nº de polos estátor</td><td class="val">${npol} polos</td><td>Paso de polo 100 mm → ${npol}×100 mm = ${H_cm} cm</td></tr>
+  <tr><td>Paso de polo</td><td class="val">100 mm</td><td>Distancia entre polos del estátor</td></tr>
+  <tr><td>Material imanes (rotor)</td><td class="val">NdFeB N52</td><td>Mayor densidad energética · encapsulado IP68</td></tr>
+  <tr><td>Material laminaciones (estátor)</td><td class="val">FeSi 3% M270-50A</td><td>Bajas pérdidas a baja frecuencia</td></tr>
+  <tr><td>Bobinado</td><td class="val">Cu esmaltado clase H (180°C)</td><td>Resistente a humedad y temperatura</td></tr>
+  <tr><td>Encapsulado imanes</td><td class="val">Epoxy marino IP68</td><td>El cilindro está siempre sumergido en C2</td></tr>
+  <tr><td>Rectificador</td><td class="val">Puente IGBT 6 pulsos</td><td>Rango ${vcil2_W}–${vcil1_W} mm/s · convierte AC variable → DC</td></tr>
+  <tr><td>Regulador MPPT</td><td class="val">MPPT activo · rango ${vRat_W}× tensión entrada</td><td>Crítico: debe cubrir ratio bajada/subida para eficiencia en ambas fases</td></tr>
+  <tr><td>Inversor</td><td class="val">${Pinv_W} W monofásico 230 V 50 Hz</td><td>Dimensionado para pico ${Ppeak_W} W · media ${Pnom_W} W</td></tr>
+  <tr><td>Batería buffer</td><td class="val">LiFePO4 2–5 kWh con BMS</td><td>Nivela asimetría C1/C2 · mín. ${bufWh_W} Wh/ciclo de nivelado</td></tr>
+</table>
+
+<h3>5.2 · Instalación del generador en el prototipo PVC</h3>
+<ol class="steps">
+  <li class="step"><strong>Distribuir los imanes en el cilindro.</strong> Pegar los imanes NdFeB N52 en el exterior del cilindro DN140 con epoxy marino IP68. Distribuirlos en anillos alternando polaridad N-S a lo largo de la altura del cilindro (${h_cm} cm). Separación entre anillos = paso de polo = 100 mm. Encapsular todo el conjunto con una capa final de epoxy para protección IP68.</li>
+  <li class="step"><strong>Bobinar el estátor en la columna.</strong> Enrollar las bobinas de Cu esmaltado clase H alrededor de la columna DN200 en posiciones equiespaciadas cada 100 mm a lo largo del recorrido (${H_cm} cm = ${npol} posiciones). Las bobinas deben quedar entre la pared interior de la columna y el cilindro — la holgura de ${(M.hol*1000).toFixed(0)} mm define el espacio disponible para las bobinas.</li>
+  <li class="step"><strong>Laminaciones del estátor.</strong> Intercalar laminaciones de FeSi 3% M270-50A entre las bobinas para concentrar el flujo magnético y reducir pérdidas. Fijar con resina epoxi en la pared interior de la columna.</li>
+  <li class="step"><strong>Sacar los cables del estátor.</strong> Los extremos de cada bobina deben salir por la parte superior de la columna por un prensaestopas estanco IP68. Conectarlos en estrella o triángulo según el diseño del rectificador.</li>
+  <li class="step"><strong>Conectar la electrónica de potencia.</strong> Orden de conexión: Bobinas → Rectificador IGBT → Regulador MPPT → Batería buffer LiFePO4 → Inversor → Carga / red.</li>
+</ol>
+
+<h3>5.3 · Fabricación manual del generador (alternativa DIY)</h3>
+<div class="note">💡 Para un prototipo de ${Pnom_W} W es viable fabricar el generador manualmente con componentes estándar.</div>
+<ol class="steps">
+  <li class="step"><strong>Imanes (rotor en cilindro).</strong> Usar imanes de neodimio N52 de bloques 40×20×10 mm. Para el cilindro Ø${d_mm} mm: distribuir 4 imanes por anillo (90° entre sí) × ${Math.ceil(parseFloat(h_cm)/10)} anillos ≈ ${4*Math.ceil(parseFloat(h_cm)/10)} imanes total. Alternar polaridad N-S entre anillos. Pegar con Araldite 2011 + capa final de fibra de carbono + epoxy marino.</li>
+  <li class="step"><strong>Núcleo del estátor (columna).</strong> Cortar tiras de chapa de transformador (FeSi, espesor 0.5 mm) en segmentos de ${(M.hol*1000*0.7).toFixed(0)} mm de grosor × 50 mm de ancho. Apilar y pegar con barniz de laminación formando ${npol} núcleos distribuidos en la columna.</li>
+  <li class="step"><strong>Bobinas.</strong> Usar hilo de Cu esmaltado AWG 22 (Ø0.64 mm). Para cada núcleo: bobinar 200–300 vueltas en dos capas. Resistencia por bobina ≈ 8–12 Ω. Conectar todas en serie para tensión máxima o en paralelo para corriente máxima. Aislar con barniz de impregnación + tubo termorretráctil.</li>
+  <li class="step"><strong>Rectificador DIY.</strong> Puente de diodos Schottky 100 V / 10 A (MBR10100, sobredimensionado para pico ${Ppeak_W} W). Capacitor de filtro 1000 µF 50 V. TVS de protección P6KE36A. Debe manejar el rango de tensión ${vRat_W}× entre fases (bajada ${vcil1_W} mm/s / subida ${vcil2_W} mm/s).</li>
+  <li class="step"><strong>Regulador MPPT DIY.</strong> Módulo MPPT DC-DC basado en CN3722 o LT3652. <strong>Crítico para ciclo asimétrico:</strong> debe cubrir un rango de tensión de entrada de ${vRat_W}× — sin esto, la fase de subida (más lenta, ${vcil2_W} mm/s) no se extrae eficientemente. Ajustar salida a 14.6 V (LiFePO4 12 V nominal).</li>
+  <li class="step"><strong>Carga/inversor DIY.</strong> Para pruebas: resistencia de ${(14.4*14.4/Ppeak_W).toFixed(0)} Ω · ${Ppeak_W} W (dimensionada para el pico). Para uso real: inversor puro seno 12 V → 230 V 50 Hz de <strong>${Pinv_W} W</strong> — no ${Pnom_W} W, porque debe absorber el pico de bajada. La batería buffer (mín. ${bufWh_W} Wh/ciclo) nivela la asimetría hacia la carga a ${Pnom_W} W continuos.</li>
+</ol>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>6 · Verificación y puesta en marcha</h2>
+<table>
+  <tr><th>Test</th><th>Método</th><th>Criterio de éxito</th></tr>
+  <tr><td>Flotabilidad cilindro</td><td>Sumergir en cubo lleno de agua</td><td>Sube solo en C2 (sin lastre extra). Fn ≥ ${Fn_N} N</td></tr>
+  <tr><td>Peso total C1</td><td>Báscula con cilindro lleno de agua</td><td>${M.MC1.toFixed(2)} kg ± 0.1 kg</td></tr>
+  <tr><td>Holgura columna-cilindro</td><td>Galga de espesores</td><td>${(M.hol*1000).toFixed(0)} mm ± 2 mm en todo el perímetro</td></tr>
+  <tr><td>Estanqueidad T</td><td>Presurizar a ${(M.Pf*2).toFixed(2)} bar durante 10 min</td><td>Sin fugas visibles</td></tr>
+  <tr><td>Válvulas check agua</td><td>Aplicar flujo en dirección incorrecta</td><td>Cierre total en ≤0.5 s</td></tr>
+  <tr><td>Funcionamiento autónomo</td><td>Soltar cilindro en columna llena</td><td>Ciclo completo de ${tc_s} s ± 5 s</td></tr>
+  <tr><td>Asimetría del ciclo</td><td>Cronometrar bajada y subida por separado</td><td>Bajada ≈ ${t1_W} s · Subida ≈ ${t2_W} s · ratio ≈ ${vRat_W}×</td></tr>
+  <tr><td>Tensión en vacío del generador</td><td>Osciloscopio en bornes del estátor</td><td>Forma de onda sinusoidal AC a la velocidad de paso</td></tr>
+  <tr><td>Potencia bajo carga</td><td>Vatímetro + resistencia de prueba</td><td>≥ ${(M.PW*0.85).toFixed(2)} W (85% del valor teórico)</td></tr>
+</table>
+
+<div class="warn">⚠️ <strong>Seguridad:</strong> El cilindro pesa ${M.MC1.toFixed(2)} kg en C1 y desciende con una fuerza de ${(M.MC1*9.81).toFixed(1)} N. Instalar topes mecánicos en los extremos superior e inferior del recorrido para evitar golpes.</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>7 · Datos energéticos del prototipo</h2>
+<table>
+  <tr><th>Magnitud</th><th>Valor</th></tr>
+  <tr><td>E por ciclo C1 (bajada en seco)</td><td class="val">${ec1} J · ${t1_W} s</td></tr>
+  <tr><td>E por ciclo C2 (Arquímedes)</td><td class="val">${ec2} J · ${t2_W} s</td></tr>
+  <tr><td>Potencia pico C1</td><td class="val">${Ppeak_W} W</td></tr>
+  <tr><td>Ratio t_subida/t_bajada</td><td class="val">${(parseFloat(t2_W)/parseFloat(t1_W)).toFixed(2)}×</td></tr>
+  <tr><td>E total por ciclo</td><td class="val">${eT_J} J</td></tr>
+  <tr><td>Potencia media continua</td><td class="val">${PW_W} W</td></tr>
+  <tr><td>Energía/día</td><td class="val">${(M.kd*1000).toFixed(0)} Wh/día</td></tr>
+  <tr><td>Energía/año</td><td class="val">${(M.ka*1000).toFixed(0)} Wh/año</td></tr>
+  <tr><td>Vel. media cilindro</td><td class="val">${vcil} mm/s</td></tr>
+  <tr><td>Vel. pico cilindro</td><td class="val">${vcilP} mm/s</td></tr>
+  <tr><td>Empuje Arquímedes FA</td><td class="val">${FA_N} N</td></tr>
+  <tr><td>Fuerza neta C2 Fn</td><td class="val">${Fn_N} N</td></tr>
+  <tr><td>Fuerza máxima Fmax</td><td class="val">${Fmax_N} N</td></tr>
+</table>
+
+<p style="text-align:center;color:#888;font-size:10px;margin-top:24px;border-top:1px solid #334;padding-top:12px">
+  Generador Concéntrico V3 Rev.15 · Jesús de León Plata · Patente concedida<br>
+  Informe generado automáticamente por el simulador · ${new Date().toLocaleDateString('es-ES')}
+</p>`;
+
+  document.getElementById('informe-body').innerHTML=html;
+  document.getElementById('modal-informe').style.display='block';
+  document.getElementById('modal-informe').scrollTop=0;
+}
+</script>
+
 </body>
 </html>

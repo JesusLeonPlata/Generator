@@ -1,137 +1,530 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canary Research Venture S.L. — Sitio en Construcción</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600&family=Rajdhani:wght@600;700&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador — Generador Hidrogravitatorio (Patente Concedida)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap');
 
-        :root {
-            --bg: #050e1c;
-            --panel: #09162a;
-            --teal: #00c8f0;
-            --amber: #f0a800;
-            --text: #b8cce0;
-            --white: #e4f2ff;
-            --disp: 'Rajdhani', sans-serif;
-            --body: 'Exo 2', sans-serif;
-        }
+:root {
+  --bg: #020813;
+  --panel-bg: rgba(6, 18, 38, 0.88);
+  --panel-border: rgba(0, 229, 255, 0.35);
+  --teal: #00e5ff;
+  --green: #00ff88;
+  --amber: #ffb700;
+  --red: #ff3b5c;
+  --text-muted: #6287a3;
+  --text: #cce3f5;
+  --white: #ffffff;
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-disp: 'Rajdhani', sans-serif;
+  --font-body: 'Exo 2', sans-serif;
+}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: var(--body);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
-        }
+header {
+  background: linear-gradient(90deg, #01040a, #07162b, #01040a);
+  border-bottom: 1px solid var(--panel-border);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 100;
+  flex-shrink: 0;
+}
+.logo-badge {
+  width: 40px; height: 44px;
+  border: 2px solid var(--green);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 14px; font-weight: 700;
+  color: var(--green);
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+  background: rgba(0, 255, 136, 0.05);
+}
+header h1 {
+  font-family: var(--font-disp); font-size: 18px; font-weight: 700;
+  letter-spacing: 2px; color: var(--white);
+}
+header .subtitle {
+  font-family: var(--font-mono); font-size: 11px; color: var(--teal);
+  background: rgba(0,229,255,0.08); border: 1px solid rgba(0,229,255,0.3);
+  padding: 2px 10px; border-radius: 4px;
+}
+header .patent-tag {
+  margin-left: auto; font-family: var(--font-mono); font-size: 11px;
+  color: var(--green); border: 1px solid var(--green);
+  background: rgba(0,255,136,0.1); padding: 4px 12px; border-radius: 4px; font-weight: 700;
+}
 
-        /* Efecto de luz de fondo sutil (Estilo tecnológico/marino) */
-        body::before {
-            content: '';
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(0,200,240,0.06) 0%, rgba(0,0,0,0) 70%);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1;
-            pointer-events: none;
-        }
+.main-layout {
+  display: grid;
+  grid-template-columns: 310px 1fr 410px;
+  flex: 1; min-height: 0; overflow: hidden; position: relative;
+}
 
-        .container {
-            background-color: var(--panel);
-            border: 1px solid #18355e;
-            border-radius: 12px;
-            padding: 40px 50px;
-            text-align: center;
-            max-width: 550px;
-            width: 90%;
-            box-shadow: 0 15px 35px rgba(3, 10, 20, 0.5);
-            z-index: 2;
-        }
+.sidebar-left {
+  background: var(--panel-bg);
+  backdrop-filter: blur(12px);
+  border-right: 1px solid var(--panel-border);
+  padding: 15px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 14px;
+  z-index: 20;
+}
+.sec-title {
+  font-family: var(--font-disp); font-size: 12px; letter-spacing: 2px;
+  color: var(--teal); text-transform: uppercase; padding-bottom: 4px;
+  border-bottom: 1px solid var(--panel-border);
+}
+.input-group { display: flex; flex-direction: column; gap: 4px; }
+.input-group label {
+  display: flex; justify-content: space-between; font-size: 11px; color: var(--text);
+}
+.input-group label span {
+  font-family: var(--font-mono); font-size: 11px; color: var(--teal);
+  background: rgba(0,229,255,0.1); padding: 1px 6px; border-radius: 3px;
+}
+input[type=range] {
+  width: 100%; height: 5px; border-radius: 3px; outline: none; border: none;
+  -webkit-appearance: none; background: #0c213d; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--teal); box-shadow: 0 0 10px var(--teal); cursor: pointer;
+}
+.btn-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+button.btn-action {
+  padding: 8px 0; border-radius: 6px; border: 1px solid var(--panel-border);
+  background: rgba(0,229,255,0.05); color: var(--white); font-family: var(--font-disp);
+  font-size: 12px; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: all 0.2s;
+}
+button.btn-action:hover { border-color: var(--teal); color: var(--teal); background: rgba(0,229,255,0.15); }
 
-        .logo-badge {
-            display: inline-block;
-            font-family: var(--disp);
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--teal);
-            background: rgba(0, 200, 240, 0.08);
-            border: 1px solid rgba(0, 200, 240, 0.25);
-            padding: 4px 14px;
-            border-radius: 4px;
-            letter-spacing: 2px;
-            margin-bottom: 25px;
-        }
+.viewport-3d {
+  position: relative; width: 100%; height: 100%; overflow: hidden; background: #010610;
+  z-index: 1; display: flex; align-items: center; justify-content: center;
+}
+#sim-canvas { width: 100%; height: 100%; display: block; }
 
-        h1 {
-            font-family: var(--disp);
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--white);
-            letter-spacing: 1px;
-            line-height: 1.2;
-            margin-bottom: 10px;
-        }
+.hud-overlay {
+  position: absolute; top: 15px; left: 15px; right: 15px;
+  display: flex; gap: 10px; pointer-events: none; z-index: 10;
+}
+.hud-card {
+  background: var(--panel-bg); backdrop-filter: blur(10px);
+  border: 1px solid var(--panel-border); border-radius: 8px;
+  padding: 8px 12px; pointer-events: auto;
+}
+.hud-card .lbl { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.hud-card .val { font-family: var(--font-mono); font-size: 14px; color: var(--green); font-weight: 700; }
 
-        .status {
-            font-family: var(--disp);
-            font-size: 16px;
-            color: var(--amber);
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            margin-bottom: 30px;
-            font-weight: 600;
-        }
+.phase-tag {
+  margin-left: auto; font-family: var(--font-disp); font-size: 11px; font-weight: 700;
+  padding: 6px 14px; border-radius: 20px; border: 1px solid var(--green);
+  color: var(--green); background: rgba(0,255,136,0.15); backdrop-filter: blur(8px);
+}
 
-        .divider {
-            height: 1px;
-            background: linear-gradient(90deg, rgba(240,168,0,0), #18355e, rgba(240,168,0,0));
-            margin-bottom: 30px;
-        }
+.sidebar-right {
+  background: var(--panel-bg); backdrop-filter: blur(12px);
+  border-left: 1px solid var(--panel-border);
+  display: flex; flex-direction: column; overflow-y: auto;
+  z-index: 20; padding: 15px; gap: 10px;
+}
 
-        p {
-            font-size: 14px;
-            line-height: 1.6;
-            color: var(--text);
-            font-weight: 300;
-        }
+.metric-card {
+  background: rgba(13, 30, 54, 0.6); border: 1px solid var(--panel-border); border-radius: 8px;
+  padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;
+}
+.metric-card .info .lbl { font-size: 9.5px; color: var(--text-muted); text-transform: uppercase; }
+.metric-card .info .val { font-family: var(--font-mono); font-size: 18px; font-weight: 700; color: var(--green); }
+.metric-card .sub { font-size: 10px; color: var(--teal); }
 
-        footer {
-            margin-top: 40px;
-            font-size: 11px;
-            color: #4a6888;
-            letter-spacing: 0.5px;
-        }
-    </style>
+.data-row {
+  display: flex; justify-content: space-between; padding: 4.5px 0;
+  border-bottom: 1px solid rgba(0, 229, 255, 0.1); font-size: 10.5px;
+}
+.data-row .k { color: var(--text-muted); }
+.data-row .v { font-family: var(--font-mono); color: var(--white); font-weight: 600; }
+
+.adv-box {
+  background: rgba(0, 255, 136, 0.03); border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: 8px; padding: 10px; margin-top: 5px;
+}
+.adv-box h4 { color: var(--green); font-family: var(--font-disp); font-size: 11.5px; margin-bottom: 4px; }
+.adv-box p { font-size: 10px; color: var(--text); line-height: 1.35; }
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="logo-badge">CRV</div>
-        <h1>Canary Research Venture S.L.</h1>
-        <div class="status">Sitio web en construcción</div>
-        
-        <div class="divider"></div>
-        
-        <p>Estamos desarrollando soluciones tecnológicas innovadoras y sostenibles para el futuro energético. Muy pronto estará disponible nuestro portal web oficial con toda la información sobre nuestros proyectos e investigaciones.</p>
-        
-        <footer>
-            &copy; 2026 Canary Research Venture S.L. Todos los derechos reservados.
-        </footer>
+<header>
+  <div class="logo-badge">PAT</div>
+  <div>
+    <h1>GENERADOR HIDROGRAVITATORIO — ANILLOS CONCÉNTRICOS Y COBERTURA ENERGÉTICA</h1>
+    <div class="subtitle">Canary Research Venture S.L. | Arquitectura Mareal</div>
+  </div>
+  <div class="patent-tag">PATENTE CONCEDIDA</div>
+</header>
+
+<div class="main-layout">
+  <aside class="sidebar-left">
+    <div class="sec-title">Dimensiones de la Instalación</div>
+    
+    <div class="input-group">
+      <label>Radio Cilindro r (m)<span id="lbl_rCIL">0.50</span></label>
+      <input type="range" id="sl_rCIL" min="0.20" max="1.50" step="0.05" value="0.50" oninput="onParamsChange()">
+    </div>
+    
+    <div class="input-group">
+      <label>Altura Columnas h (m)<span id="lbl_hCF">4.00</span></label>
+      <input type="range" id="sl_hCF" min="2.00" max="12.00" step="0.50" value="4.00" oninput="onParamsChange()">
     </div>
 
+    <div class="input-group">
+      <label>Cadencia (Ciclos/min)<span id="lbl_cpm">2.0</span></label>
+      <input type="range" id="sl_cpm" min="0.5" max="5.0" step="0.5" value="2.0" oninput="onParamsChange()">
+    </div>
+
+    <div class="sec-title">Control de Animación</div>
+    <div class="btn-grid">
+      <button class="btn-action" onclick="togglePlay()">PAUSA / PLAY</button>
+    </div>
+    
+    <div class="input-group">
+      <label>Velocidad Simulador<span id="lbl_speed">1.0×</span></label>
+      <input type="range" id="sl_speed" min="0.2" max="4.0" step="0.2" value="1.0" oninput="simSpeed=+this.value; document.getElementById('lbl_speed').textContent=this.value+'×'">
+    </div>
+  </aside>
+
+  <section class="viewport-3d">
+    <div class="hud-overlay">
+      <div class="hud-card">
+        <div class="lbl">Potencia Continua</div>
+        <div class="val" id="hud_Pinst">4.13 kW</div>
+      </div>
+      <div class="hud-card">
+        <div class="lbl">Generación Diaria</div>
+        <div class="val" id="hud_kWh" style="color:var(--teal)">99.12 kWh</div>
+      </div>
+      <div class="hud-card">
+        <div class="lbl">Cobertura Residencial</div>
+        <div class="val" id="hud_hogares" style="color:var(--green)">11 Hogares</div>
+      </div>
+      <div class="phase-tag" id="hud_phase">FASE A: CAÍDA CIL₁ ➔ TRASVASE A CF₂</div>
+    </div>
+
+    <canvas id="sim-canvas"></canvas>
+  </section>
+
+  <aside class="sidebar-right">
+    <!-- TARGETA DE COBERTURA ENERGÉTICA -->
+    <div class="metric-card">
+      <div class="info">
+        <div class="lbl">Suministro Estimado</div>
+        <div class="val" id="m_hogares" style="color:var(--green)">11 Hogares</div>
+      </div>
+      <div class="sub">Base: 9 kWh/día por hogar</div>
+    </div>
+
+    <!-- SECCIÓN DIMENSIONADO DE ANILLOS CONCÉNTRICOS -->
+    <div class="sec-title">Dimensiones de Anillos (h = 4.00 m)</div>
+    
+    <div style="background: rgba(0,229,255,0.04); border: 1px solid rgba(0,229,255,0.2); border-radius:6px; padding:8px; margin-bottom:4px;">
+      <div style="font-weight:700; color:var(--teal); font-size:10px; margin-bottom:4px; font-family:var(--font-disp);">ANILLO INTERIOR (DESALOJO Y PURGA - BAJAMAR)</div>
+      <div class="data-row"><span class="k">Diámetro Interior / Exterior</span><span class="v" id="dim_int_d">3.00 m / 3.70 m</span></div>
+      <div class="data-row"><span class="k">Espesor de Anillo</span><span class="v" id="dim_int_e">0.35 m</span></div>
+      <div class="data-row"><span class="k">Volumen Útil Almacenamiento</span><span class="v" id="dim_int_vol">14.73 m³</span></div>
+    </div>
+
+    <div style="background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.2); border-radius:6px; padding:8px;">
+      <div style="font-weight:700; color:var(--green); font-size:10px; margin-bottom:4px; font-family:var(--font-disp);">ANILLO EXTERIOR (ESTANQUE REGULADOR - PLEAMAR)</div>
+      <div class="data-row"><span class="k">Diámetro Interior / Exterior</span><span class="v" id="dim_ext_d">3.70 m / 4.50 m</span></div>
+      <div class="data-row"><span class="k">Espesor de Anillo</span><span class="v" id="dim_ext_e">0.40 m</span></div>
+      <div class="data-row"><span class="k">Volumen Útil Almacenamiento</span><span class="v" id="dim_ext_vol">20.60 m³</span></div>
+    </div>
+
+    <div class="sec-title">Balance de Circuito Hidráulico</div>
+    <div class="data-row"><span class="k">Masa Trasvasada (CF1 ➔ CF2)</span><span class="v" id="d_masa">3.141,6 kg</span></div>
+    <div class="data-row"><span class="k">Inyección Hidrostática (ΔV)</span><span class="v" id="d_inj" style="color:var(--amber)">450 kg</span></div>
+    <div class="data-row"><span class="k">Purga Total Anillo Int.</span><span class="v" id="d_purga" style="color:var(--green)">3.591,6 kg</span></div>
+
+    <div class="adv-box">
+      <h4>AUTONOMÍA Y EFICIENCIA MAREAL</h4>
+      <p>Con la configuración seleccionada de h = 4.0m y r = 0.5m, la planta de generación cubre de forma ininterrumpida la demanda eléctrica base de 11 viviendas promedio, aprovechando la cota de pleamar para recargar el Anillo Exterior y la bajamar para evacuar el Anillo Interior.</p>
+    </div>
+  </aside>
+</div>
+
+<script>
+let rCIL = 0.50, hCF = 4.00, cpm = 2.0;
+let isRunning = true, simSpeed = 1.0, lastTime = 0, tAnim = 0;
+let canvas, ctx;
+
+function onParamsChange() {
+  rCIL = +document.getElementById('sl_rCIL').value;
+  hCF = +document.getElementById('sl_hCF').value;
+  cpm = +document.getElementById('sl_cpm').value;
+
+  document.getElementById('lbl_rCIL').textContent = rCIL.toFixed(2);
+  document.getElementById('lbl_hCF').textContent = hCF.toFixed(2);
+  document.getElementById('lbl_cpm').textContent = cpm.toFixed(1);
+
+  // 1. Cálculos Hidráulicos y Energéticos
+  const volM3 = Math.PI * Math.pow(rCIL, 2) * hCF;
+  const massKg = volM3 * 1025.0;
+  const injVol = volM3 * 0.143;
+  const injKg = massKg * 0.143;
+  const totalPurga = massKg + injKg;
+
+  const kw = (massKg * 9.81 * hCF * 0.82 * (cpm / 60)) / 1000;
+  const kwhDia = kw * 24;
+  
+  // Consumo medio por hogar en España ~ 9 kWh/día
+  const hogares = Math.floor(kwhDia / 9.0);
+
+  document.getElementById('hud_Pinst').textContent = kw.toFixed(2) + " kW";
+  document.getElementById('hud_kWh').textContent = kwhDia.toFixed(2) + " kWh";
+  document.getElementById('hud_hogares').textContent = hogares + " Hogares";
+  document.getElementById('m_hogares').textContent = hogares + " Hogares";
+
+  document.getElementById('d_masa').textContent = massKg.toLocaleString('es-ES', {maximumFractionDigits: 1}) + " kg";
+  document.getElementById('d_inj').textContent = injKg.toLocaleString('es-ES', {maximumFractionDigits: 1}) + " kg";
+  document.getElementById('d_purga').textContent = totalPurga.toLocaleString('es-ES', {maximumFractionDigits: 1}) + " kg";
+
+  // 2. Cálculo Estructural de los Anillos Concéntricos (para Altura de Anillos = 4.0m)
+  const rBaseCols = Math.max(1.2, rCIL * 2.8); // Radio base donde se alojan las columnas
+  const espInt = 0.35 * (rCIL / 0.50);
+  const rIntIn = rBaseCols;
+  const rIntOut = rBaseCols + espInt;
+  const volInt = Math.PI * (Math.pow(rIntOut, 2) - Math.pow(rIntIn, 2)) * 4.0;
+
+  const espExt = 0.40 * (rCIL / 0.50);
+  const rExtIn = rIntOut;
+  const rExtOut = rIntOut + espExt;
+  const volExt = Math.PI * (Math.pow(rExtOut, 2) - Math.pow(rExtIn, 2)) * 4.0;
+
+  document.getElementById('dim_int_d').textContent = (rIntIn * 2).toFixed(2) + " m / " + (rIntOut * 2).toFixed(2) + " m";
+  document.getElementById('dim_int_e').textContent = espInt.toFixed(2) + " m";
+  document.getElementById('dim_int_vol').textContent = volInt.toFixed(2) + " m³";
+
+  document.getElementById('dim_ext_d').textContent = (rExtIn * 2).toFixed(2) + " m / " + (rExtOut * 2).toFixed(2) + " m";
+  document.getElementById('dim_ext_e').textContent = espExt.toFixed(2) + " m";
+  document.getElementById('dim_ext_vol').textContent = volExt.toFixed(2) + " m³";
+}
+
+function initEngine() {
+  canvas = document.getElementById('sim-canvas');
+  ctx = canvas.getContext('2d');
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  requestAnimationFrame(renderLoop);
+}
+
+function resizeCanvas() {
+  const container = canvas.parentElement;
+  canvas.width = container.clientWidth;
+  canvas.height = container.clientHeight;
+}
+
+function renderLoop(timestamp) {
+  if (!lastTime) lastTime = timestamp;
+  const dt = (timestamp - lastTime) / 1000;
+  lastTime = timestamp;
+
+  if (isRunning) {
+    tAnim += dt * simSpeed;
+  }
+
+  const cyclePeriod = 60.0 / cpm;
+  const phaseTime = (tAnim % cyclePeriod) / cyclePeriod;
+
+  drawScene(phaseTime);
+  requestAnimationFrame(renderLoop);
+}
+
+function drawScene(phaseTime) {
+  const W = canvas.width;
+  const H = canvas.height;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Fondo Gradiente Técnico
+  const bgGrad = ctx.createRadialGradient(W/2, H/2, 50, W/2, H/2, Math.max(W, H)/1.2);
+  bgGrad.addColorStop(0, '#06172d');
+  bgGrad.addColorStop(1, '#010610');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  const cx = W / 2;
+  const cy = H / 2 + 20;
+  const colHeight = Math.min(H * 0.48, 350);
+  const colWidth = Math.min(W * 0.08, 65);
+  const distCols = Math.min(W * 0.20, 200);
+
+  const xCF1 = cx - distCols / 2;
+  const xCF2 = cx + distCols / 2;
+  const topY = cy - colHeight / 2;
+  const botY = cy + colHeight / 2;
+
+  // 1. DIBUJAR ESTRUCTURA DE ANILLOS CONCÉNTRICOS
+  // ANILLO EXTERIOR (PLEAMAR)
+  const ringExtW = distCols + colWidth * 3.6;
+  ctx.fillStyle = "rgba(0, 229, 255, 0.06)";
+  ctx.strokeStyle = "rgba(0, 229, 255, 0.4)";
+  ctx.lineWidth = 2;
+  ctx.fillRect(cx - ringExtW / 2, topY - 35, ringExtW, 55);
+  ctx.strokeRect(cx - ringExtW / 2, topY - 35, ringExtW, 55);
+
+  ctx.fillStyle = "rgba(0, 229, 255, 0.9)";
+  ctx.font = "bold 10px Share Tech Mono";
+  ctx.fillText("ANILLO EXTERIOR (ESTANQUE REGULADOR PLEAMAR)", cx - ringExtW / 2 + 15, topY - 18);
+
+  // ANILLO INTERIOR (DESALOJO / PURGA BAJAMAR)
+  const ringIntW = distCols + colWidth * 2.2;
+  ctx.fillStyle = "rgba(0, 255, 136, 0.06)";
+  ctx.strokeStyle = "rgba(0, 255, 136, 0.5)";
+  ctx.lineWidth = 2;
+  ctx.fillRect(cx - ringIntW / 2, botY + 25, ringIntW, 45);
+  ctx.strokeRect(cx - ringIntW / 2, botY + 25, ringIntW, 45);
+
+  ctx.fillStyle = "#00ff88";
+  ctx.font = "bold 10px Share Tech Mono";
+  ctx.fillText("ANILLO INTERIOR (DESALOJO CIL₁ Y PURGA ΔV - BAJAMAR)", cx - ringIntW / 2 + 15, botY + 52);
+
+  // 2. FASES DE ANIMACIÓN HIDRÁULICA
+  let ratioCIL = 0;
+  let isInjecting = false;
+  let isPurging = false;
+
+  if (phaseTime < 0.45) {
+    ratioCIL = phaseTime / 0.45;
+    document.getElementById('hud_phase').textContent = "FASE A: CAÍDA CIL₁ ➔ TRASVASE A CF₂";
+  } else if (phaseTime >= 0.45 && phaseTime < 0.55) {
+    ratioCIL = 1.0;
+    isInjecting = true;
+    document.getElementById('hud_phase').textContent = "FASE B: VACIADO CIL₁ + INYECCIÓN ANILLO EXT. (ΔV)";
+  } else if (phaseTime >= 0.55 && phaseTime < 0.90) {
+    ratioCIL = 1.0 - ((phaseTime - 0.55) / 0.35);
+    isInjecting = true;
+    document.getElementById('hud_phase').textContent = "FASE C: RETORNO FORZADO Y ASCENSO DE CIL₁";
+  } else {
+    ratioCIL = 0.0;
+    isPurging = true;
+    document.getElementById('hud_phase').textContent = "FASE D: PURGA EXCEDENTE ΔV AL ANILLO INTERIOR";
+  }
+
+  // 3. TUBOS DE INYECCIÓN HIDROSTÁTICA DESDE ANILLO EXTERIOR A CF2
+  if (isInjecting) {
+    ctx.strokeStyle = "#ffb700";
+    ctx.lineWidth = 3;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(xCF2 + colWidth/2, topY - 10);
+    ctx.lineTo(xCF2 + colWidth/2, topY + 20);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#ffb700";
+    ctx.fillText("INYECCIÓN ΔV", xCF2 + colWidth/2 + 6, topY + 10);
+  }
+
+  // 4. CONDUCTO COMUNICANTE INFERIOR
+  ctx.fillStyle = "rgba(0, 229, 255, 0.2)";
+  ctx.strokeStyle = "#00e5ff";
+  ctx.lineWidth = 2;
+  ctx.fillRect(xCF1, botY - 14, distCols, 14);
+  ctx.strokeRect(xCF1, botY - 14, distCols, 14);
+
+  ctx.fillStyle = phaseTime < 0.5 ? "#00e5ff" : "#00ff88";
+  ctx.font = "12px Share Tech Mono";
+  ctx.fillText(phaseTime < 0.5 ? "► ► ►" : "◄ ◄ ◄", cx - 20, botY - 3);
+
+  // 5. NIVELES DE AGUA EN COLUMNAS
+  const hWater1 = (1.0 - ratioCIL) * (colHeight - 10);
+  const hWater2 = ratioCIL * (colHeight - 10);
+
+  ctx.fillStyle = "rgba(0, 216, 255, 0.45)";
+  ctx.fillRect(xCF1 - colWidth/2 + 2, botY - hWater1, colWidth - 4, hWater1);
+
+  ctx.fillStyle = "rgba(0, 255, 136, 0.45)";
+  ctx.fillRect(xCF2 - colWidth/2 + 2, botY - hWater2, colWidth - 4, hWater2);
+
+  // 6. ESTRUCTURA DE COLUMNAS CF1 Y CF2
+  ctx.strokeStyle = "rgba(0, 229, 255, 0.6)";
+  ctx.lineWidth = 2;
+  
+  ctx.strokeRect(xCF1 - colWidth/2, topY, colWidth, colHeight);
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 12px Rajdhani";
+  ctx.fillText("CF₁", xCF1 - 8, topY - 10);
+
+  ctx.strokeRect(xCF2 - colWidth/2, topY, colWidth, colHeight);
+  ctx.fillText("CF₂", xCF2 - 8, topY - 10);
+
+  // 7. CILINDRO CIL1
+  const cilH = Math.min(colHeight * 0.18, 48);
+  const cilW = colWidth - 8;
+  const cilY = topY + 5 + ratioCIL * (colHeight - cilH - 10);
+
+  const cilGrad = ctx.createLinearGradient(xCF1 - cilW/2, 0, xCF1 + cilW/2, 0);
+  cilGrad.addColorStop(0, '#ff9100');
+  cilGrad.addColorStop(0.5, '#ffd200');
+  cilGrad.addColorStop(1, '#b36200');
+  
+  ctx.fillStyle = cilGrad;
+  ctx.fillRect(xCF1 - cilW/2, cilY, cilW, cilH);
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(xCF1 - cilW/2, cilY, cilW, cilH);
+
+  ctx.fillStyle = "#000000";
+  ctx.font = "bold 11px Share Tech Mono";
+  ctx.fillText("CIL₁", xCF1 - 12, cilY + cilH / 2 + 4);
+
+  // 8. DESALOJO Y PURGA AL ANILLO INTERIOR
+  if (phaseTime >= 0.45 && phaseTime < 0.55) {
+    ctx.strokeStyle = "#ff3b5c";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(xCF1, botY);
+    ctx.lineTo(xCF1, botY + 25);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#ff3b5c";
+    ctx.fillText("DESALOJO CIL₁", xCF1 - 35, botY + 18);
+  }
+
+  if (isPurging) {
+    ctx.strokeStyle = "#00ff88";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(xCF2, botY);
+    ctx.lineTo(xCF2, botY + 25);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#00ff88";
+    ctx.fillText("PURGA ΔV", xCF2 - 25, botY + 18);
+  }
+}
+
+function togglePlay() { isRunning = !isRunning; }
+
+window.addEventListener('load', () => {
+  onParamsChange();
+  initEngine();
+});
+</script>
 </body>
 </html>

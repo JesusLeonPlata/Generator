@@ -80,7 +80,7 @@ header .patent-tag {
   backdrop-filter: blur(12px);
   border-right: 1px solid var(--panel-border);
   padding: 15px; overflow-y: auto;
-  display: flex; flex-direction: column; gap: 14px;
+  display: flex; flex-direction: column; gap: 12px;
   z-index: 20;
 }
 .sec-title {
@@ -171,7 +171,7 @@ button.btn-action:hover { border-color: var(--teal); color: var(--teal); backgro
 <header>
   <div class="logo-badge">PAT</div>
   <div>
-    <h1>GENERADOR HIDROGRAVITATORIO — ANILLOS CONCÉNTRICOS Y COBERTURA ENERGÉTICA</h1>
+    <h1>GENERADOR HIDROGRAVITATORIO — ANILLOS CONCÉNTRICOS Y DIMENSIONAMIENTO REGULABLE</h1>
     <div class="subtitle">Canary Research Venture S.L. | Arquitectura Mareal</div>
   </div>
   <div class="patent-tag">PATENTE CONCEDIDA</div>
@@ -179,7 +179,7 @@ button.btn-action:hover { border-color: var(--teal); color: var(--teal); backgro
 
 <div class="main-layout">
   <aside class="sidebar-left">
-    <div class="sec-title">Dimensiones de la Instalación</div>
+    <div class="sec-title">Geometría de Columnas</div>
     
     <div class="input-group">
       <label>Radio Cilindro r (m)<span id="lbl_rCIL">0.50</span></label>
@@ -194,6 +194,14 @@ button.btn-action:hover { border-color: var(--teal); color: var(--teal); backgro
     <div class="input-group">
       <label>Cadencia (Ciclos/min)<span id="lbl_cpm">2.0</span></label>
       <input type="range" id="sl_cpm" min="0.5" max="5.0" step="0.5" value="2.0" oninput="onParamsChange()">
+    </div>
+
+    <div class="sec-title" style="color:var(--amber);">Estanque Superior (Pleamar)</div>
+    
+    <!-- NUEVO PARÁMETRO: ALTURA DEL ESTANQUE SUPERIOR -->
+    <div class="input-group">
+      <label>Altura Estanque Superior h_ext (m)<span id="lbl_hExt" style="color:var(--amber);">4.00</span></label>
+      <input type="range" id="sl_hExt" min="1.00" max="6.00" step="0.25" value="4.00" oninput="onParamsChange()">
     </div>
 
     <div class="sec-title">Control de Animación</div>
@@ -228,7 +236,6 @@ button.btn-action:hover { border-color: var(--teal); color: var(--teal); backgro
   </section>
 
   <aside class="sidebar-right">
-    <!-- TARGETA DE COBERTURA ENERGÉTICA -->
     <div class="metric-card">
       <div class="info">
         <div class="lbl">Suministro Estimado</div>
@@ -237,21 +244,22 @@ button.btn-action:hover { border-color: var(--teal); color: var(--teal); backgro
       <div class="sub">Base: 9 kWh/día por hogar</div>
     </div>
 
-    <!-- SECCIÓN DIMENSIONADO DE ANILLOS CONCÉNTRICOS -->
-    <div class="sec-title">Dimensiones de Anillos (h = 4.00 m)</div>
+    <div class="sec-title">Dimensiones de Anillos Concéntricos</div>
     
-    <div style="background: rgba(0,229,255,0.04); border: 1px solid rgba(0,229,255,0.2); border-radius:6px; padding:8px; margin-bottom:4px;">
-      <div style="font-weight:700; color:var(--teal); font-size:10px; margin-bottom:4px; font-family:var(--font-disp);">ANILLO INTERIOR (DESALOJO Y PURGA - BAJAMAR)</div>
+    <div style="background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.2); border-radius:6px; padding:8px; margin-bottom:4px;">
+      <div style="font-weight:700; color:var(--green); font-size:10px; margin-bottom:4px; font-family:var(--font-disp);">ANILLO INTERIOR (DESALOJO Y PURGA - BAJAMAR)</div>
+      <div class="data-row"><span class="k">Altura Fija Anillo</span><span class="v" id="dim_int_h">4.00 m</span></div>
       <div class="data-row"><span class="k">Diámetro Interior / Exterior</span><span class="v" id="dim_int_d">3.00 m / 3.70 m</span></div>
       <div class="data-row"><span class="k">Espesor de Anillo</span><span class="v" id="dim_int_e">0.35 m</span></div>
       <div class="data-row"><span class="k">Volumen Útil Almacenamiento</span><span class="v" id="dim_int_vol">14.73 m³</span></div>
     </div>
 
-    <div style="background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.2); border-radius:6px; padding:8px;">
-      <div style="font-weight:700; color:var(--green); font-size:10px; margin-bottom:4px; font-family:var(--font-disp);">ANILLO EXTERIOR (ESTANQUE REGULADOR - PLEAMAR)</div>
-      <div class="data-row"><span class="k">Diámetro Interior / Exterior</span><span class="v" id="dim_ext_d">3.70 m / 4.50 m</span></div>
-      <div class="data-row"><span class="k">Espesor de Anillo</span><span class="v" id="dim_ext_e">0.40 m</span></div>
-      <div class="data-row"><span class="k">Volumen Útil Almacenamiento</span><span class="v" id="dim_ext_vol">20.60 m³</span></div>
+    <div style="background: rgba(255,183,0,0.04); border: 1px solid rgba(255,183,0,0.3); border-radius:6px; padding:8px;">
+      <div style="font-weight:700; color:var(--amber); font-size:10px; margin-bottom:4px; font-family:var(--font-disp);">ANILLO EXTERIOR (DETERMINADO SEGÚN h_ext CONFIGURADA)</div>
+      <div class="data-row"><span class="k">Altura Configurada (h_ext)</span><span class="v" id="dim_ext_h" style="color:var(--amber)">4.00 m</span></div>
+      <div class="data-row"><span class="k">Diámetro Interior / Exterior</span><span class="v" id="dim_ext_d">3.70 m / 4.11 m</span></div>
+      <div class="data-row"><span class="k">Espesor Requerido</span><span class="v" id="dim_ext_e" style="color:var(--amber)">0.21 m</span></div>
+      <div class="data-row"><span class="k">Volumen Útil Necesario</span><span class="v" id="dim_ext_vol">10.00 m³</span></div>
     </div>
 
     <div class="sec-title">Balance de Circuito Hidráulico</div>
@@ -260,14 +268,14 @@ button.btn-action:hover { border-color: var(--teal); color: var(--teal); backgro
     <div class="data-row"><span class="k">Purga Total Anillo Int.</span><span class="v" id="d_purga" style="color:var(--green)">3.591,6 kg</span></div>
 
     <div class="adv-box">
-      <h4>AUTONOMÍA Y EFICIENCIA MAREAL</h4>
-      <p>Con la configuración seleccionada de h = 4.0m y r = 0.5m, la planta de generación cubre de forma ininterrumpida la demanda eléctrica base de 11 viviendas promedio, aprovechando la cota de pleamar para recargar el Anillo Exterior y la bajamar para evacuar el Anillo Interior.</p>
+      <h4>DIMENSIONAMIENTO AUTOMÁTICO DEL ANILLO EXTERIOR</h4>
+      <p>Al modificar la altura del estanque superior (h_ext), el código recalcula dinámicamente el espesor radial y el diámetro exterior mínimo necesario para mantener la reserva hidrostática requerida para la inyección ΔV.</p>
     </div>
   </aside>
 </div>
 
 <script>
-let rCIL = 0.50, hCF = 4.00, cpm = 2.0;
+let rCIL = 0.50, hCF = 4.00, cpm = 2.0, hExt = 4.00;
 let isRunning = true, simSpeed = 1.0, lastTime = 0, tAnim = 0;
 let canvas, ctx;
 
@@ -275,10 +283,12 @@ function onParamsChange() {
   rCIL = +document.getElementById('sl_rCIL').value;
   hCF = +document.getElementById('sl_hCF').value;
   cpm = +document.getElementById('sl_cpm').value;
+  hExt = +document.getElementById('sl_hExt').value;
 
   document.getElementById('lbl_rCIL').textContent = rCIL.toFixed(2);
   document.getElementById('lbl_hCF').textContent = hCF.toFixed(2);
   document.getElementById('lbl_cpm').textContent = cpm.toFixed(1);
+  document.getElementById('lbl_hExt').textContent = hExt.toFixed(2);
 
   // 1. Cálculos Hidráulicos y Energéticos
   const volM3 = Math.PI * Math.pow(rCIL, 2) * hCF;
@@ -289,8 +299,6 @@ function onParamsChange() {
 
   const kw = (massKg * 9.81 * hCF * 0.82 * (cpm / 60)) / 1000;
   const kwhDia = kw * 24;
-  
-  // Consumo medio por hogar en España ~ 9 kWh/día
   const hogares = Math.floor(kwhDia / 9.0);
 
   document.getElementById('hud_Pinst').textContent = kw.toFixed(2) + " kW";
@@ -302,25 +310,32 @@ function onParamsChange() {
   document.getElementById('d_inj').textContent = injKg.toLocaleString('es-ES', {maximumFractionDigits: 1}) + " kg";
   document.getElementById('d_purga').textContent = totalPurga.toLocaleString('es-ES', {maximumFractionDigits: 1}) + " kg";
 
-  // 2. Cálculo Estructural de los Anillos Concéntricos (para Altura de Anillos = 4.0m)
-  const rBaseCols = Math.max(1.2, rCIL * 2.8); // Radio base donde se alojan las columnas
+  // 2. Cálculo Estructural del Anillo Interior (fijo a hCF)
+  const rBaseCols = Math.max(1.2, rCIL * 2.8);
   const espInt = 0.35 * (rCIL / 0.50);
   const rIntIn = rBaseCols;
   const rIntOut = rBaseCols + espInt;
-  const volInt = Math.PI * (Math.pow(rIntOut, 2) - Math.pow(rIntIn, 2)) * 4.0;
+  const volInt = Math.PI * (Math.pow(rIntOut, 2) - Math.pow(rIntIn, 2)) * hCF;
 
-  const espExt = 0.40 * (rCIL / 0.50);
-  const rExtIn = rIntOut;
-  const rExtOut = rIntOut + espExt;
-  const volExt = Math.PI * (Math.pow(rExtOut, 2) - Math.pow(rExtIn, 2)) * 4.0;
-
+  document.getElementById('dim_int_h').textContent = hCF.toFixed(2) + " m";
   document.getElementById('dim_int_d').textContent = (rIntIn * 2).toFixed(2) + " m / " + (rIntOut * 2).toFixed(2) + " m";
   document.getElementById('dim_int_e').textContent = espInt.toFixed(2) + " m";
   document.getElementById('dim_int_vol').textContent = volInt.toFixed(2) + " m³";
 
+  // 3. CÁLCULO DINÁMICO DEL ANILLO EXTERIOR A PARTIR DE hExt CONFIGURADO
+  // Volumen de reserva requerido (proporcional al volumen de la columna con factor de seguridad de 3.2x)
+  const reqVolExt = Math.max(5.0, volM3 * 3.18); 
+  const rExtIn = rIntOut;
+  
+  // Area_anillo = Vol / hExt => PI * (rExtOut^2 - rExtIn^2) = reqVolExt
+  // rExtOut = sqrt(rExtIn^2 + reqVolExt / (PI * hExt))
+  const rExtOut = Math.sqrt(Math.pow(rExtIn, 2) + (reqVolExt / (Math.PI * hExt)));
+  const espExt = rExtOut - rExtIn;
+
+  document.getElementById('dim_ext_h').textContent = hExt.toFixed(2) + " m";
   document.getElementById('dim_ext_d').textContent = (rExtIn * 2).toFixed(2) + " m / " + (rExtOut * 2).toFixed(2) + " m";
   document.getElementById('dim_ext_e').textContent = espExt.toFixed(2) + " m";
-  document.getElementById('dim_ext_vol').textContent = volExt.toFixed(2) + " m³";
+  document.getElementById('dim_ext_vol').textContent = reqVolExt.toFixed(2) + " m³";
 }
 
 function initEngine() {
@@ -378,17 +393,18 @@ function drawScene(phaseTime) {
   const botY = cy + colHeight / 2;
 
   // 1. DIBUJAR ESTRUCTURA DE ANILLOS CONCÉNTRICOS
-  // ANILLO EXTERIOR (PLEAMAR)
+  // ANILLO EXTERIOR DIBUJADO SEGÚN LA ALTURA CONFIGURADA hExt
+  const hExtPixels = Math.min(80, Math.max(25, hExt * 12));
   const ringExtW = distCols + colWidth * 3.6;
-  ctx.fillStyle = "rgba(0, 229, 255, 0.06)";
-  ctx.strokeStyle = "rgba(0, 229, 255, 0.4)";
+  ctx.fillStyle = "rgba(255, 183, 0, 0.06)";
+  ctx.strokeStyle = "rgba(255, 183, 0, 0.5)";
   ctx.lineWidth = 2;
-  ctx.fillRect(cx - ringExtW / 2, topY - 35, ringExtW, 55);
-  ctx.strokeRect(cx - ringExtW / 2, topY - 35, ringExtW, 55);
+  ctx.fillRect(cx - ringExtW / 2, topY - hExtPixels, ringExtW, hExtPixels);
+  ctx.strokeRect(cx - ringExtW / 2, topY - hExtPixels, ringExtW, hExtPixels);
 
-  ctx.fillStyle = "rgba(0, 229, 255, 0.9)";
+  ctx.fillStyle = "rgba(255, 183, 0, 0.9)";
   ctx.font = "bold 10px Share Tech Mono";
-  ctx.fillText("ANILLO EXTERIOR (ESTANQUE REGULADOR PLEAMAR)", cx - ringExtW / 2 + 15, topY - 18);
+  ctx.fillText("ANILLO EXTERIOR (h_ext = " + hExt.toFixed(2) + "m)", cx - ringExtW / 2 + 15, topY - hExtPixels + 15);
 
   // ANILLO INTERIOR (DESALOJO / PURGA BAJAMAR)
   const ringIntW = distCols + colWidth * 2.2;

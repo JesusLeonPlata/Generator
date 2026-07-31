@@ -400,7 +400,9 @@ function drawScene(phaseTime) {
 
   ctx.fillStyle = "rgba(255, 183, 0, 0.9)";
   ctx.font = "bold 10px Share Tech Mono";
-  ctx.fillText("ANILLO EXTERIOR (h_ext = " + hExt.toFixed(2) + "m - EMPUJE Δh > 0)", cx - ringExtW / 2 + 15, topY - hExtPixels + 15);
+  ctx.textAlign = "center"; // Centrado respecto al estanque
+  ctx.fillText("ANILLO EXTERIOR (h_ext = " + hExt.toFixed(2) + "m - EMPUJE Δh > 0)", cx, topY - hExtPixels - 8);
+  ctx.textAlign = "start"; // Restablece alineación para el resto del lienzo
 
   // ANILLO INTERIOR (DESALOJO / PURGA BAJAMAR)
   const ringIntW = distCols + colWidth * 2.2;
